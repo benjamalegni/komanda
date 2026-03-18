@@ -41,37 +41,24 @@ export type OfficialCart = {
   discountTotal: number;
   total: number;
   updatedAt?: string;
+  expiresAt?: string;
 };
 
+// !!!! may be adding more of this later
 export type CustomerInfo = {
   name: string;
   email: string;
   phone: string;
 };
 
-export type ShippingAddress = {
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  reference?: string;
-};
-
-export type FulfillmentMethod = "delivery" | "pickup";
-
 export type CheckoutFormValues = {
   customer: CustomerInfo;
-  fulfillmentMethod: FulfillmentMethod;
-  branch: string;
-  shippingAddress: ShippingAddress;
   notes: string;
 };
 
 export type CreateOrderPayload = {
   cartId: string;
   customer: CustomerInfo;
-  fulfillmentMethod: FulfillmentMethod;
-  branch: string;
-  shippingAddress?: ShippingAddress;
   notes?: string;
 };
 

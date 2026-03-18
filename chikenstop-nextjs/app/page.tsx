@@ -7,6 +7,7 @@ export default function Home() {
   const message = "CHIKEN LOVER?";
   const router = useRouter();
 
+
   return (
     <main className="bg-[var(--color-accent-primary)] min-h-screen">
       <header>

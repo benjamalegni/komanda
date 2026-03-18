@@ -6,8 +6,6 @@ import type {
   OfficialCartLine,
 } from "@/types/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
-
 type CartApiResponse = {
   id?: string;
   cartId?: string;
@@ -18,17 +16,10 @@ type CartApiResponse = {
   discountTotal?: number | string;
   total?: number | string;
   updatedAt?: string;
+  expiresAt?: string;
 };
 
-function ensureApiBaseUrl() {
-  if (!API_BASE_URL) {
-    throw new Error(
-      "Missing NEXT_PUBLIC_API_URL. Configure the checkout backend before using cart sync.",
-    );
-  }
-
-  return API_BASE_URL;
-}
+const CART_API_BASE_PATH = "/api/cart";
 
 function toNumber(value: unknown, fallback = 0) {
   const parsed = Number(value);
@@ -79,6 +70,7 @@ function normalizeCartResponse(payload: CartApiResponse): OfficialCart {
     discountTotal,
     total: toNumber(payload.total, subtotal - discountTotal),
     updatedAt: payload.updatedAt,
+    expiresAt: payload.expiresAt,
   };
 }
 
@@ -86,7 +78,7 @@ async function requestCart(
   path: string,
   options: RequestInit,
 ): Promise<OfficialCart> {
-  const response = await fetch(`${ensureApiBaseUrl()}${path}`, {
+  const response = await fetch(`${CART_API_BASE_PATH}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -115,27 +107,17 @@ export function buildCartSnapshot(lines: CartSnapshotLine[]) {
   }));
 }
 
-export async function upsertCart(
-  lines: CartSnapshotLine[],
-  cartId?: string | null,
-) {
+export async function createCart(lines: CartSnapshotLine[]) {
   const payload = { items: buildCartSnapshot(lines) };
 
-  if (cartId) {
-    return requestCart(`/cart/${cartId}`, {
-      method: "PUT",
-      body: JSON.stringify(payload),
-    });
-  }
-
-  return requestCart("/cart", {
+  return requestCart("", {
     method: "POST",
     body: JSON.stringify(payload),
   });
 }
 
 export async function getCart(cartId: string) {
-  return requestCart(`/cart/${cartId}`, {
+  return requestCart(`/${cartId}`, {
     method: "GET",
     cache: "no-store",
   });

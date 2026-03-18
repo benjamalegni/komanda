@@ -1,12 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/features/shop/cart/context/cart.context";
 import { getCart } from "@/features/shop/cart/services/cart.service";
 import { createOrder } from "@/features/shop/checkout/services/checkout.service";
 import type {
-  CartSnapshotLine,
+  CartLine,
   CheckoutFormValues,
   CreateOrderPayload,
   OfficialCart,
@@ -19,14 +19,6 @@ const initialFormValues: CheckoutFormValues = {
     email: "",
     phone: "",
   },
-  fulfillmentMethod: "pickup",
-  branch: "",
-  shippingAddress: {
-    addressLine1: "",
-    addressLine2: "",
-    city: "",
-    reference: "",
-  },
   notes: "",
 };
 
@@ -38,96 +30,67 @@ function formatCurrency(value: number, currency = "ARS") {
   }).format(value);
 }
 
-function buildSnapshotDifferenceMessages(
-  snapshot: CartSnapshotLine[],
+function doesGlobalCartMatchOfficialCart(
+  items: CartLine[],
+  cartId: string | null,
   officialCart: OfficialCart,
 ) {
-  const messages: string[] = [];
-  const snapshotMap = new Map(snapshot.map((line) => [line.documentId, line]));
-  const officialMap = new Map(
-    officialCart.items.map((line) => [line.documentId, line]),
-  );
+  if (cartId !== officialCart.id || items.length !== officialCart.items.length) {
+    return false;
+  }
 
-  snapshot.forEach((line) => {
-    const officialLine = officialMap.get(line.documentId);
+  return items.every((item, index) => {
+    const officialLine = officialCart.items[index];
 
-    if (!officialLine) {
-      messages.push(`${line.name} ya no forma parte del carrito oficial.`);
-      return;
-    }
-
-    if (officialLine.quantity !== line.quantity) {
-      messages.push(
-        `${line.name} cambio de cantidad: ${line.quantity} -> ${officialLine.quantity}.`,
-      );
-    }
-
-    if (officialLine.unitPrice !== line.unitPrice) {
-      messages.push(
-        `${line.name} cambio de precio: ${formatCurrency(line.unitPrice)} -> ${formatCurrency(officialLine.unitPrice)}.`,
-      );
-    }
-
-    if (!officialLine.available) {
-      messages.push(`${line.name} no esta disponible en este momento.`);
-    }
+    return (
+      item.item.documentId === officialLine.documentId &&
+      item.quantity === officialLine.quantity &&
+      item.item.name === officialLine.name &&
+      item.item.price === officialLine.unitPrice &&
+      item.item.image === officialLine.image &&
+      (item.item.description ?? null) === (officialLine.note ?? null)
+    );
   });
-
-  officialCart.items.forEach((line) => {
-    if (!snapshotMap.has(line.documentId)) {
-      messages.push(`${line.name} fue agregado al carrito oficial.`);
-    }
-  });
-
-  return messages;
 }
 
-function SnapshotSummary({
-  snapshot,
-}: {
-  snapshot: CartSnapshotLine[];
-}) {
-  const subtotal = snapshot.reduce(
-    (total, line) => total + line.unitPrice * line.quantity,
-    0,
-  );
-
+function OfficialCartSkeleton() {
   return (
-    <section className="rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-4">
-      <div className="mb-4 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold">Snapshot local</h2>
-          <p className="text-sm opacity-80">
-            Se muestra al instante mientras se valida el carrito oficial.
-          </p>
-        </div>
-        <span className="text-sm font-semibold">
-          {snapshot.length} {snapshot.length === 1 ? "item" : "items"}
-        </span>
+    <section className="animate-pulse rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-4">
+      <div className="mb-4 space-y-2">
+        <div className="h-7 w-40 rounded bg-[var(--color-accent-secondary)]/15" />
+        <div className="h-4 w-64 rounded bg-[var(--color-accent-secondary)]/10" />
       </div>
 
       <div className="space-y-3">
-        {snapshot.map((line) => (
+        {[0, 1, 2].map((item) => (
           <div
-            key={line.documentId}
-            className="flex items-center justify-between rounded-sm border border-[var(--color-accent-secondary)]/40 p-3"
+            key={item}
+            className="rounded-sm border border-[var(--color-accent-secondary)]/20 p-3"
           >
-            <div>
-              <p className="font-semibold">{line.name}</p>
-              <p className="text-sm opacity-80">
-                {line.quantity} x {formatCurrency(line.unitPrice)}
-              </p>
+            <div className="flex items-center justify-between gap-4">
+              <div className="space-y-2">
+                <div className="h-5 w-32 rounded bg-[var(--color-accent-secondary)]/15" />
+                <div className="h-4 w-24 rounded bg-[var(--color-accent-secondary)]/10" />
+              </div>
+              <div className="h-5 w-20 rounded bg-[var(--color-accent-secondary)]/15" />
             </div>
-            <p className="font-semibold">
-              {formatCurrency(line.quantity * line.unitPrice)}
-            </p>
           </div>
         ))}
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t border-[var(--color-accent-secondary)] pt-4 font-semibold">
-        <span>Subtotal estimado</span>
-        <span>{formatCurrency(subtotal)}</span>
+      <div className="mt-4 space-y-2 border-t border-[var(--color-accent-secondary)] pt-4">
+        <div className="flex items-center justify-between">
+          <div className="h-4 w-20 rounded bg-[var(--color-accent-secondary)]/10" />
+          <div className="h-4 w-24 rounded bg-[var(--color-accent-secondary)]/10" />
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="h-4 w-24 rounded bg-[var(--color-accent-secondary)]/10" />
+          <div className="h-4 w-20 rounded bg-[var(--color-accent-secondary)]/10" />
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="h-6 w-24 rounded bg-[var(--color-accent-secondary)]/15" />
+          <div className="h-6 w-28 rounded bg-[var(--color-accent-secondary)]/15" />
+        </div>
       </div>
     </section>
   );
@@ -140,14 +103,11 @@ function OfficialCartSummary({
 }) {
   return (
     <section className="rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-4">
-      <div className="mb-4 flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold">Carrito oficial</h2>
-          <p className="text-sm opacity-80">
-            Totales y disponibilidad confirmados por backend.
-          </p>
-        </div>
-        <span className="text-sm font-semibold">cartId: {officialCart.id}</span>
+      <div className="mb-4">
+        <h2 className="text-xl font-bold">Carrito oficial</h2>
+        <p className="text-sm opacity-80">
+          Totales y disponibilidad confirmados por backend.
+        </p>
       </div>
 
       <div className="space-y-3">
@@ -202,14 +162,8 @@ function OfficialCartSummary({
 
 export default function CheckoutPayPage() {
   const router = useRouter();
-  const {
-    applyOfficialCart,
-    cartId,
-    clearCart,
-    isHydrated,
-    snapshot,
-    syncCart,
-  } = useCart();
+  const { applyOfficialCart, cartId, clearCart, isHydrated, items, snapshot, syncCart } =
+    useCart();
   const [formValues, setFormValues] = useState(initialFormValues);
   const [officialCart, setOfficialCart] = useState<OfficialCart | null>(null);
   const [cartError, setCartError] = useState<string | null>(null);
@@ -218,46 +172,65 @@ export default function CheckoutPayPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
 
-  const differenceMessages = useMemo(
-    () =>
-      officialCart ? buildSnapshotDifferenceMessages(snapshot, officialCart) : [],
-    [officialCart, snapshot],
-  );
-
   const loadOfficialCart = useCallback(
     async (nextCartId?: string | null) => {
       const effectiveCartId = nextCartId ?? cartId;
 
       if (!effectiveCartId) {
-        setOfficialCart(null);
-        setCartError(
-          "Todavia no existe un cartId valido. Sin carrito oficial no se puede confirmar la compra.",
-        );
         return null;
       }
-
-      setIsLoadingCart(true);
-      setCartError(null);
 
       try {
         const backendCart = await getCart(effectiveCartId);
         setOfficialCart(backendCart);
-        applyOfficialCart(backendCart);
         return backendCart;
-      } catch (error) {
+      } catch {
+        return null;
+      }
+    },
+    [cartId],
+  );
+
+  const resolveOfficialCart = useCallback(
+    async (nextCartId?: string | null) => {
+      setIsLoadingCart(true);
+      setCartError(null);
+
+      try {
+        const backendCart = await loadOfficialCart(nextCartId);
+
+        if (backendCart) {
+          return backendCart;
+        }
+
+        const syncedCart = await syncCart();
+
+        if (syncedCart) {
+          setOfficialCart(syncedCart);
+          return syncedCart;
+        }
+
         setOfficialCart(null);
-        setCartError(
-          error instanceof Error
-            ? error.message
-            : "No se pudo obtener el carrito oficial.",
-        );
+        setCartError("No pudimos validar tu carrito. Intenta nuevamente.");
         return null;
       } finally {
         setIsLoadingCart(false);
       }
     },
-    [applyOfficialCart, cartId],
+    [loadOfficialCart, syncCart],
   );
+
+  useEffect(() => {
+    if (!officialCart) {
+      return;
+    }
+
+    if (doesGlobalCartMatchOfficialCart(items, cartId, officialCart)) {
+      return;
+    }
+
+    applyOfficialCart(officialCart);
+  }, [applyOfficialCart, cartId, items, officialCart]);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -270,20 +243,12 @@ export default function CheckoutPayPage() {
       return;
     }
 
-    void loadOfficialCart();
-  }, [isHydrated, loadOfficialCart, snapshot.length]);
+    void resolveOfficialCart(cartId);
+  }, [cartId, isHydrated, resolveOfficialCart, snapshot.length]);
 
   const handleRetryValidation = useCallback(async () => {
-    const syncedCart = await syncCart();
-
-    if (syncedCart) {
-      setOfficialCart(syncedCart);
-      setCartError(null);
-      return;
-    }
-
-    await loadOfficialCart();
-  }, [loadOfficialCart, syncCart]);
+    await resolveOfficialCart();
+  }, [resolveOfficialCart]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -291,7 +256,7 @@ export default function CheckoutPayPage() {
 
     if (!officialCart?.id) {
       setSubmitError(
-        "El pedido necesita un carrito oficial validado antes de poder confirmarse.",
+        "El pedido necesita un carrito validado antes de poder confirmarse.",
       );
       return;
     }
@@ -299,18 +264,7 @@ export default function CheckoutPayPage() {
     const payload: CreateOrderPayload = {
       cartId: officialCart.id,
       customer: formValues.customer,
-      fulfillmentMethod: formValues.fulfillmentMethod,
-      branch: formValues.branch,
       notes: formValues.notes || undefined,
-      shippingAddress:
-        formValues.fulfillmentMethod === "delivery"
-          ? {
-              addressLine1: formValues.shippingAddress.addressLine1,
-              addressLine2: formValues.shippingAddress.addressLine2 || undefined,
-              city: formValues.shippingAddress.city,
-              reference: formValues.shippingAddress.reference || undefined,
-            }
-          : undefined,
     };
 
     setIsSubmitting(true);
@@ -360,7 +314,7 @@ export default function CheckoutPayPage() {
 
   return (
     <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
-      <div className="mx-auto max-w-6xl space-y-6">
+      <div className="mx-auto max-w-4xl space-y-6">
         <div className="flex flex-col gap-3 rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.2em]">Checkout seguro</p>
@@ -389,49 +343,25 @@ export default function CheckoutPayPage() {
           </section>
         ) : null}
 
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-          <SnapshotSummary snapshot={snapshot} />
+        {isLoadingCart ? <OfficialCartSkeleton /> : null}
 
-          <section className="space-y-4">
-            {isLoadingCart ? (
-              <div className="rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-4">
-                Validando carrito oficial...
-              </div>
-            ) : null}
+        {!isLoadingCart && officialCart ? (
+          <OfficialCartSummary officialCart={officialCart} />
+        ) : null}
 
-            {officialCart ? (
-              <OfficialCartSummary officialCart={officialCart} />
-            ) : (
-              <div className="rounded-sm border border-red-700 bg-white/40 p-4 text-red-700">
-                <p className="font-semibold">No hay carrito oficial listo.</p>
-                <p className="mt-2 text-sm">
-                  {cartError ??
-                    "Sin validacion del backend no se puede confirmar la compra."}
-                </p>
-                <button
-                  type="button"
-                  onClick={handleRetryValidation}
-                  className="mt-4 rounded-sm border border-current px-4 py-2 font-semibold"
-                >
-                  Reintentar validacion
-                </button>
-              </div>
-            )}
-
-            {differenceMessages.length > 0 ? (
-              <div className="rounded-sm border border-amber-700 bg-white/40 p-4 text-amber-800">
-                <p className="font-semibold">
-                  El carrito oficial no coincide con el snapshot local. NO ALTERES EL ESTADO LOCAL TE ESTOY VIGILANDO
-                </p>
-                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
-                  {differenceMessages.map((message) => (
-                    <li key={message}>{message}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
+        {!isLoadingCart && !officialCart && cartError ? (
+          <section className="rounded-sm border border-red-700 bg-white/40 p-4 text-red-700">
+            <p className="font-semibold">No pudimos validar tu carrito.</p>
+            <p className="mt-2 text-sm">{cartError}</p>
+            <button
+              type="button"
+              onClick={handleRetryValidation}
+              className="mt-4 rounded-sm border border-current px-4 py-2 font-semibold"
+            >
+              Reintentar validacion
+            </button>
           </section>
-        </div>
+        ) : null}
 
         <form
           onSubmit={handleSubmit}
@@ -498,123 +428,6 @@ export default function CheckoutPayPage() {
             </label>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="space-y-2">
-              <span className="text-sm font-semibold">Metodo de envio</span>
-              <select
-                value={formValues.fulfillmentMethod}
-                onChange={(event) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    fulfillmentMethod: event.target.value as
-                      | "delivery"
-                      | "pickup",
-                  }))
-                }
-                className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-3 py-2"
-              >
-                <option value="pickup">Retiro en sucursal</option>
-                <option value="delivery">Envio a domicilio</option>
-              </select>
-            </label>
-
-            <label className="space-y-2">
-              <span className="text-sm font-semibold">Sucursal</span>
-              <input
-                required
-                value={formValues.branch}
-                onChange={(event) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    branch: event.target.value,
-                  }))
-                }
-                className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-3 py-2"
-                placeholder="Ej: Centro"
-              />
-            </label>
-          </div>
-
-          {formValues.fulfillmentMethod === "delivery" ? (
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold">Direccion de envio</h3>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="space-y-2">
-                  <span className="text-sm font-semibold">Direccion</span>
-                  <input
-                    required
-                    value={formValues.shippingAddress.addressLine1}
-                    onChange={(event) =>
-                      setFormValues((current) => ({
-                        ...current,
-                        shippingAddress: {
-                          ...current.shippingAddress,
-                          addressLine1: event.target.value,
-                        },
-                      }))
-                    }
-                    className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-3 py-2"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-semibold">
-                    Departamento / Piso
-                  </span>
-                  <input
-                    value={formValues.shippingAddress.addressLine2}
-                    onChange={(event) =>
-                      setFormValues((current) => ({
-                        ...current,
-                        shippingAddress: {
-                          ...current.shippingAddress,
-                          addressLine2: event.target.value,
-                        },
-                      }))
-                    }
-                    className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-3 py-2"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-semibold">Ciudad</span>
-                  <input
-                    required
-                    value={formValues.shippingAddress.city}
-                    onChange={(event) =>
-                      setFormValues((current) => ({
-                        ...current,
-                        shippingAddress: {
-                          ...current.shippingAddress,
-                          city: event.target.value,
-                        },
-                      }))
-                    }
-                    className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-3 py-2"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-semibold">Referencia</span>
-                  <input
-                    value={formValues.shippingAddress.reference}
-                    onChange={(event) =>
-                      setFormValues((current) => ({
-                        ...current,
-                        shippingAddress: {
-                          ...current.shippingAddress,
-                          reference: event.target.value,
-                        },
-                      }))
-                    }
-                    className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-3 py-2"
-                  />
-                </label>
-              </div>
-            </div>
-          ) : null}
-
           <label className="block space-y-2">
             <span className="text-sm font-semibold">Notas del pedido</span>
             <textarea
@@ -627,7 +440,7 @@ export default function CheckoutPayPage() {
                 }))
               }
               className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-3 py-2"
-              placeholder="Ej: sin cebolla, tocar timbre, etc."
+              placeholder="Ej: sin cebolla"
             />
           </label>
 
@@ -637,7 +450,7 @@ export default function CheckoutPayPage() {
 
           <button
             type="submit"
-            disabled={!officialCart || isSubmitting}
+            disabled={!officialCart || isSubmitting || isLoadingCart}
             className="rounded-sm bg-[var(--color-accent-secondary)] px-5 py-3 font-semibold text-[var(--color-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? "Confirmando pedido..." : "Confirmar compra"}

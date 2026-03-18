@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { upsertCart } from "@/features/shop/cart/services/cart.service";
+import { createCart } from "@/features/shop/cart/services/cart.service";
 import type {
   CartLine,
   CartSnapshotLine,
@@ -125,6 +125,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [cartId, isHydrated, items]);
 
   const addItem = useCallback((item: MenuItem) => {
+    setCartId(null);
     setSyncStatus("idle");
     setSyncError(null);
     setItems((currentItems) => {
@@ -145,6 +146,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const decrementItem = useCallback((documentId: string) => {
+    setCartId(null);
     setSyncStatus("idle");
     setSyncError(null);
     setItems((currentItems) =>
@@ -163,6 +165,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const removeItem = useCallback((documentId: string) => {
+    setCartId(null);
     setSyncStatus("idle");
     setSyncError(null);
     setItems((currentItems) =>
@@ -220,7 +223,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setSyncError(null);
 
     try {
-      const syncedCart = await upsertCart(items.map(cartLineToSnapshot), cartId);
+      const syncedCart = await createCart(items.map(cartLineToSnapshot));
       applyOfficialCart(syncedCart);
       return syncedCart;
     } catch (error) {
@@ -230,7 +233,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       );
       return null;
     }
-  }, [applyOfficialCart, cartId, items]);
+  }, [applyOfficialCart, items]);
 
   const beginCheckout = useCallback(async () => syncCart(), [syncCart]);
 
