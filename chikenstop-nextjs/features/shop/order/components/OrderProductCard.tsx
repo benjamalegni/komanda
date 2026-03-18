@@ -1,8 +1,8 @@
 "use client";
 
 import type { MouseEvent } from "react";
-import ProductCard from "@/features/menu/components/ProductCard";
-import { useCart } from "@/features/cart/context/cart.context";
+import ProductCard from "@/features/shop/menu/components/ProductCard";
+import { useCart } from "@/features/shop/cart/context/cart.context";
 import { MenuItem } from "@/types/types";
 
 export default function OrderProductCard({ item }: { item: MenuItem }) {

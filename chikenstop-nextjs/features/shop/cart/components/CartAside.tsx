@@ -1,6 +1,6 @@
 "use client";
 
-import CartPanel from "@/features/cart/components/CartPanel";
+import CartPanel from "@/features/shop/cart/components/CartPanel";
 
 export default function CartAside() {
   return (

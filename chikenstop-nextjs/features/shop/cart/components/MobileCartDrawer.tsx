@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import CartPanel from "@/features/cart/components/CartPanel";
-import { useCart } from "@/features/cart/context/cart.context";
+import CartPanel from "@/features/shop/cart/components/CartPanel";
+import { useCart } from "@/features/shop/cart/context/cart.context";
 
 export default function MobileCartDrawer() {
   const [isOpen, setIsOpen] = useState(false);

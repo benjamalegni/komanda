@@ -20,16 +20,17 @@ export default function Home() {
       </header>
 
       <h1 className="text-4xl font-bold text-center">{message}</h1>
-      <div className="flex justify-center gap-4">
-      <button className="bg-[var(--color-accent-secondary)] hover:bg-[var(--color-accent-primary)] text-white p-2 rounded-4xl"
-      onClick={() => router.push("/order")}
-      >
+        <div className="flex justify-center gap-4">
+          <button className="bg-[var(--color-accent-secondary)] hover:bg-[var(--color-accent-primary)] text-white p-2 rounded-4xl"
+          onClick={() => router.push("/order")}
+          >
         ORDENA
-      </button>
-      <button className="bg-[var(--color-accent-secondary)] hover:bg-[var(--color-accent-primary)] text-white p-2 rounded-4xl">
-        MENU ONLINE
-      </button>
-      </div>
+          </button>
+        <button className="bg-[var(--color-accent-secondary)] hover:bg-[var(--color-accent-primary)] text-white p-2 rounded-4xl">
+          MENU ONLINE
+        </button>
+        </div>
+
     </main>
   );
 }

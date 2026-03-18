@@ -1,10 +1,20 @@
 "use client";
 
-import { useCart } from "@/features/cart/context/cart.context";
+import { useCart } from "@/features/shop/cart/context/cart.context";
+import { useRouter } from "next/navigation";
 import CartItem from "./item/CartItem";
 
 export default function CartPanel() {
-  const { items, itemCount, subtotal} = useCart();
+  const { beginCheckout, items, itemCount, subtotal, syncError, syncStatus } =
+    useCart();
+  const router = useRouter();
+
+  const handleCheckout = async () => {
+    await beginCheckout();
+    router.push("/checkout/pay");
+  };
+
+  const syncErrorMessage = "No se pudo validar el carrito con backend. Vas a poder revisar el estado en checkout, pero no confirmar hasta que exista un carrito oficial.";
 
   return (
     <div className="flex h-full flex-col rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] text-[var(--color-accent-secondary)] shadow-lg">
@@ -26,7 +36,7 @@ export default function CartPanel() {
         ) : (
           items.map((cartLine) => (
             <article
-              key={cartLine.item.id}
+              key={cartLine.item.documentId}
               className="space-y-3 rounded-sm border border-[var(--color-accent-secondary)] bg-white/30 p-4"
             >
               <CartItem cartLine={cartLine} />
@@ -41,13 +51,19 @@ export default function CartPanel() {
           <span>${subtotal}</span>
         </div>
 
+        {syncError ? (
+          <p className="text-sm text-red-700">
+            {syncErrorMessage}
+          </p>
+        ) : null}
+
         <button
           type="button"
-          // luego pongo onClick={}
-          disabled={items.length === 0}
+          onClick={handleCheckout}
+          disabled={items.length === 0 || syncStatus === "syncing"}
           className="w-full rounded-sm bg-[var(--color-accent-secondary)] text-[var(--color-accent-primary)] px-4 py-3 font-semibold disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {`Checkout =>`}
+          {syncStatus === "syncing" ? "Preparando checkout..." : "Checkout =>"}
         </button>
       </div>
     </div>
