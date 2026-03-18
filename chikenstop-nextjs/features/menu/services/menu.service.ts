@@ -3,6 +3,20 @@ import { MenuItem } from "@/types/types";
 const STRAPI_URL = process.env.STRAPI_URL;
 const STRAPI_FULL_ACCESS_TOKEN = process.env.STRAPI_FULL_ACCESS_TOKEN;
 
+type StrapiMenuItem = {
+  id: number;
+  name: string;
+  price: number | string;
+  description: string | null;
+  image?: {
+    url?: string;
+  } | null;
+};
+
+type MenuItemsResponse = {
+  data: StrapiMenuItem[];
+};
+
 export async function getMenuItems(): Promise<MenuItem[]> {
   const response = await fetch(`${STRAPI_URL}/api/menu-items?populate=image`, {
     headers: {
@@ -15,16 +29,16 @@ export async function getMenuItems(): Promise<MenuItem[]> {
     throw new Error("Failed to fetch menu items");
   }
 
-  const data = await response.json();
+  const data = (await response.json()) as MenuItemsResponse;
 
-  const items = data.data.map((item: any) => ({
-    name: item.name,
-    price: Number(item.price),
-    description: item.description,
-    // image is an object with url, alternativeText, name, etc. We only need the url in this case to display the item image.
-    image: `${STRAPI_URL}${item.image.url}`
+  const items = data.data.map((entry) => ({
+    id: entry.id,
+    name: entry.name,
+    price: Number(entry.price),
+    description: entry.description,
+    // Strapi can return image metadata; the card only needs the final URL.
+    image: entry.image?.url ? `${STRAPI_URL}${entry.image.url}` : "",
   }));
 
-  console.log(items);
   return items;
 }

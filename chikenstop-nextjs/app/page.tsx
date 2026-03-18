@@ -8,7 +8,7 @@ export default function Home() {
   const router = useRouter();
 
   return (
-    <main className="bg-[var(--color-accent-primary)]">
+    <main className="bg-[var(--color-accent-primary)] min-h-screen">
       <header>
         <nav>
           <ul>
