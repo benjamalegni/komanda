@@ -60,9 +60,74 @@ export type CreateOrderPayload = {
   cartId: string;
   customer: CustomerInfo;
   notes?: string;
+  metadata?: OrderRequestMetadata;
 };
 
 export type CreatedOrder = {
   id: string;
   status?: string;
+};
+
+export type OrderRequestMetadata = {
+  checkoutPaymentId: string;
+  paymentId: string;
+  preferenceId: string;
+  orderRequestIdempotencyKey: string;
+  approvedAt: string;
+  source: "mercadopago-webhook";
+};
+
+export type OrderStatus = "approved";
+
+export type CheckoutPaymentStatus =
+  | "initiated"
+  | "processing"
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "failed"
+  | "duplicate";
+
+export type CheckoutPaymentPrintStatus =
+  | "not_requested"
+  | "queued"
+  | "processing"
+  | "printed"
+  | "failed";
+
+export type PrintJobStatus = "pending" | "processing" | "printed" | "failed";
+
+export type PrintJobPayload = {
+  orderId: string;
+  cartId: string;
+  checkoutPaymentId: string;
+  paymentId: string;
+  preferenceId: string;
+  customer: CustomerInfo;
+  notes?: string;
+  currency: string;
+  amount: number;
+  approvedAt: string;
+  items: OfficialCartLine[];
+  summary: {
+    subtotal: number;
+    discountTotal: number;
+    total: number;
+  };
+};
+
+export type CreatePaymentSessionPayload = {
+  cartId: string;
+  customer: CustomerInfo;
+  notes?: string;
+};
+
+export type PaymentSession = {
+  paymentId: string;
+  preferenceId: string;
+  initPoint: string;
+  sandboxInitPoint?: string;
+  cartId: string;
+  amount: number;
+  currency: string;
 };

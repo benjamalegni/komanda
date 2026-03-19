@@ -1,8 +1,10 @@
 import "dotenv/config";
 import { defineConfig } from "drizzle-kit";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error("Missing DATABASE_URL environment variable.");
+const migrationUrl = process.env.DATABASE_DIRECT_URL ?? process.env.DATABASE_URL;
+
+if (!migrationUrl) {
+  throw new Error("Missing DATABASE_DIRECT_URL or DATABASE_URL environment variable.");
 }
 
 export default defineConfig({
@@ -10,6 +12,6 @@ export default defineConfig({
   schema: "./db/schema.ts",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL,
+    url: migrationUrl,
   },
 });

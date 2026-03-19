@@ -4,11 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/features/shop/cart/context/cart.context";
 import { getCart } from "@/features/shop/cart/services/cart.service";
-import { createOrder } from "@/features/shop/checkout/services/checkout.service";
+import { createPaymentSession } from "@/features/shop/payments/services/payment-session.service";
 import type {
   CartLine,
   CheckoutFormValues,
-  CreateOrderPayload,
   OfficialCart,
   OfficialCartLine,
 } from "@/types/types";
@@ -162,15 +161,13 @@ function OfficialCartSummary({
 
 export default function CheckoutPayPage() {
   const router = useRouter();
-  const { applyOfficialCart, cartId, clearCart, isHydrated, items, snapshot, syncCart } =
-    useCart();
+  const { applyOfficialCart, cartId, isHydrated, items, snapshot, syncCart } = useCart();
   const [formValues, setFormValues] = useState(initialFormValues);
   const [officialCart, setOfficialCart] = useState<OfficialCart | null>(null);
   const [cartError, setCartError] = useState<string | null>(null);
   const [isLoadingCart, setIsLoadingCart] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
 
   const loadOfficialCart = useCallback(
     async (nextCartId?: string | null) => {
@@ -261,7 +258,7 @@ export default function CheckoutPayPage() {
       return;
     }
 
-    const payload: CreateOrderPayload = {
+    const payload = {
       cartId: officialCart.id,
       customer: formValues.customer,
       notes: formValues.notes || undefined,
@@ -270,14 +267,13 @@ export default function CheckoutPayPage() {
     setIsSubmitting(true);
 
     try {
-      const order = await createOrder(payload);
-      setCreatedOrderId(order.id);
-      clearCart();
+      const session = await createPaymentSession(payload);
+      window.location.assign(session.initPoint);
     } catch (error) {
       setSubmitError(
         error instanceof Error
           ? error.message
-          : "No se pudo crear la orden en backend.",
+          : "No se pudo iniciar el pago con Mercado Pago.",
       );
     } finally {
       setIsSubmitting(false);
@@ -294,7 +290,7 @@ export default function CheckoutPayPage() {
     );
   }
 
-  if (snapshot.length === 0 && !createdOrderId) {
+  if (snapshot.length === 0) {
     return (
       <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
         <div className="mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-6">
@@ -332,16 +328,6 @@ export default function CheckoutPayPage() {
             Seguir comprando
           </button>
         </div>
-
-        {createdOrderId ? (
-          <section className="rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-6">
-            <h2 className="text-2xl font-bold">Orden creada</h2>
-            <p className="mt-3">
-              Tu pedido fue enviado correctamente con el id{" "}
-              <strong>{createdOrderId}</strong>.
-            </p>
-          </section>
-        ) : null}
 
         {isLoadingCart ? <OfficialCartSkeleton /> : null}
 
@@ -453,7 +439,7 @@ export default function CheckoutPayPage() {
             disabled={!officialCart || isSubmitting || isLoadingCart}
             className="rounded-sm bg-[var(--color-accent-secondary)] px-5 py-3 font-semibold text-[var(--color-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isSubmitting ? "Confirmando pedido..." : "Confirmar compra"}
+            {isSubmitting ? "Redirigiendo a Mercado Pago..." : "Pagar con Mercado Pago"}
           </button>
         </form>
       </div>
