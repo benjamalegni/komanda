@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1773913769942,
+      "tag": "0000_workable_patch",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773924264870,
+      "tag": "0001_amused_bloodaxe",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773933457354,
+      "tag": "0002_tense_fat_cobra",
+      "breakpoints": true
+    }
+  ]
+}

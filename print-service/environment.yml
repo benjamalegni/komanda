@@ -1,0 +1,10 @@
+name: chikenstop-print
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - python-escpos
+      - pyusb
+      - requests
