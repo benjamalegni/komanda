@@ -1,10 +1,29 @@
-export type MenuItem = {
+export type Category = {
+  documentId: string;
+  name: string;
+  menu_items: MenuItem[] | null;
+  combos: Combo[] | null;
+};
+
+export type Combo = {
+  documentId: string;
   name: string;
   price: number;
   description: string | null;
   image: string;
+  category: Category | null;
+  menu_items: MenuItem[] | null;
+};
+
+export type MenuItem = {
   // this is the document id from strapi
   documentId: string;
+  name: string;
+  price: number;
+  description: string | null;
+  image: string;
+  category: Category | null;
+  combos: Combo[] | null;
 };
 
 export type CartLine = {
@@ -54,6 +73,7 @@ export type CustomerInfo = {
 export type CheckoutFormValues = {
   customer: CustomerInfo;
   notes: string;
+  discountCode: string;
 };
 
 export type CreateOrderPayload = {
@@ -120,6 +140,7 @@ export type CreatePaymentSessionPayload = {
   cartId: string;
   customer: CustomerInfo;
   notes?: string;
+  discountCode?: string;
 };
 
 export type PaymentSession = {

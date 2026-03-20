@@ -1,9 +1,24 @@
 import Image from "next/image";
 import { MenuItem } from "@/types/types";
+import { useState } from "react";
 
 export default function ProductCard({ item }: { item: MenuItem }) {
+    const [active, setActive] = useState<boolean>(false);
+    const TIMEOUT_MS = 200;
+    const notActiveClass = `menu-page__item relative flex h-44 w-full items-stretch gap-3 overflow-hidden rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] text-[var(--color-accent-secondary)] transition-shadow duration-${TIMEOUT_MS} hover:shadow-xl hover:[--tw-shadow-color:var(--color-accent-secondary)]`;
+    const activeClass = `menu-page__item relative flex h-44 w-full items-stretch gap-3 overflow-hidden rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] text-[var(--color-accent-secondary)] transition-shadow duration-${TIMEOUT_MS} hover:shadow-xl hover:[--tw-shadow-color:var(--color-accent-secondary)] shadow-xl [--tw-shadow-color:var(--color-accent-secondary)]`;
+
+
+    function activateClass(TIMEOUT_MS: number){
+        setActive(true);
+        setTimeout(() => {
+            setActive(false);
+        }, TIMEOUT_MS);
+    }
     return (
-        <div className="menu-page__item relative flex h-44 w-full items-stretch gap-3 overflow-hidden rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] text-[var(--color-accent-secondary)] transition-shadow duration-300 hover:shadow-xl hover:[--tw-shadow-color:var(--color-accent-secondary)]">
+        <div className={active ? activeClass : notActiveClass} 
+            onClick={()=>{activateClass(TIMEOUT_MS)}}
+        >
             <div className="flex min-w-0 flex-1 flex-col justify-between gap-2 p-4">
                 <div className="space-y-2">
                     <h1 className="line-clamp-2 text-xl font-bold leading-tight sm:text-2xl underline-offset-4 underline">{item.name}</h1>

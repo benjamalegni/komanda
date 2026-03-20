@@ -1,10 +1,10 @@
 {
   "kind": "collectionType",
-  "collectionName": "menu_items",
+  "collectionName": "combos",
   "info": {
-    "singularName": "menu-item",
-    "pluralName": "menu-items",
-    "displayName": "MenuItem"
+    "singularName": "combo",
+    "pluralName": "combos",
+    "displayName": "Combo"
   },
   "options": {
     "draftAndPublish": true
@@ -17,7 +17,7 @@
       "unique": true
     },
     "price": {
-      "type": "biginteger",
+      "type": "integer",
       "required": true
     },
     "description": {
@@ -34,17 +34,17 @@
         "audios"
       ]
     },
-    "combos": {
+    "menu_items": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::combo.combo",
-      "mappedBy": "menu_items"
+      "target": "api::menu-item.menu-item",
+      "inversedBy": "combos"
     },
     "category": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::category.category",
-      "inversedBy": "menu_items"
+      "inversedBy": "combos"
     }
   }
 }

@@ -66,6 +66,8 @@ function officialCartToLines(cart: OfficialCart): CartLine[] {
       price: line.unitPrice,
       description: line.note ?? null,
       image: line.image,
+      category: null,
+      combos: null,
     },
   }));
 }
@@ -100,7 +102,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const parsedCart = JSON.parse(storedCart) as PersistedCartState;
 
       if (Array.isArray(parsedCart.items)) {
-        setItems(parsedCart.items.filter(isPersistedCartLine));
+        setItems(
+          parsedCart.items.filter(isPersistedCartLine).map((line) => ({
+            ...line,
+            item: {
+              ...line.item,
+              category: line.item.category ?? null,
+              combos: line.item.combos ?? null,
+            },
+          })),
+        );
       }
 
       setCartId(parsedCart.cartId ?? null);

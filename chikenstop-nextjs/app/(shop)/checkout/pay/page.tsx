@@ -11,6 +11,7 @@ import type {
   OfficialCart,
   OfficialCartLine,
 } from "@/types/types";
+import OfficialCartSkeleton from "@/features/shop/checkout/components/skeleton/Skeleton";
 
 const initialFormValues: CheckoutFormValues = {
   customer: {
@@ -52,48 +53,6 @@ function doesGlobalCartMatchOfficialCart(
   });
 }
 
-function OfficialCartSkeleton() {
-  return (
-    <section className="animate-pulse rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-4">
-      <div className="mb-4 space-y-2">
-        <div className="h-7 w-40 rounded bg-[var(--color-accent-secondary)]/15" />
-        <div className="h-4 w-64 rounded bg-[var(--color-accent-secondary)]/10" />
-      </div>
-
-      <div className="space-y-3">
-        {[0, 1, 2].map((item) => (
-          <div
-            key={item}
-            className="rounded-sm border border-[var(--color-accent-secondary)]/20 p-3"
-          >
-            <div className="flex items-center justify-between gap-4">
-              <div className="space-y-2">
-                <div className="h-5 w-32 rounded bg-[var(--color-accent-secondary)]/15" />
-                <div className="h-4 w-24 rounded bg-[var(--color-accent-secondary)]/10" />
-              </div>
-              <div className="h-5 w-20 rounded bg-[var(--color-accent-secondary)]/15" />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-4 space-y-2 border-t border-[var(--color-accent-secondary)] pt-4">
-        <div className="flex items-center justify-between">
-          <div className="h-4 w-20 rounded bg-[var(--color-accent-secondary)]/10" />
-          <div className="h-4 w-24 rounded bg-[var(--color-accent-secondary)]/10" />
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="h-4 w-24 rounded bg-[var(--color-accent-secondary)]/10" />
-          <div className="h-4 w-20 rounded bg-[var(--color-accent-secondary)]/10" />
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="h-6 w-24 rounded bg-[var(--color-accent-secondary)]/15" />
-          <div className="h-6 w-28 rounded bg-[var(--color-accent-secondary)]/15" />
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function OfficialCartSummary({
   officialCart,
@@ -103,9 +62,9 @@ function OfficialCartSummary({
   return (
     <section className="rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-4">
       <div className="mb-4">
-        <h2 className="text-xl font-bold">Carrito oficial</h2>
+        <h2 className="text-xl font-bold">Tu carrito</h2>
         <p className="text-sm opacity-80">
-          Totales y disponibilidad confirmados por backend.
+          Los totales y disponibilidad son confirmados por el sistema.
         </p>
       </div>
 
@@ -316,8 +275,10 @@ export default function CheckoutPayPage() {
             <p className="text-sm uppercase tracking-[0.2em]">Checkout seguro</p>
             <h1 className="text-3xl font-bold">Revision final del pedido</h1>
             <p className="mt-2 text-sm opacity-80">
-              El carrito oficial del backend define el total final antes de crear
-              la orden.
+              Revisa los productos y el monto final antes de pagar.
+            </p>
+            <p className="mt-2 text-sm opacity-90 underline">
+              No podras modificarlo luego.
             </p>
           </div>
           <button
@@ -354,7 +315,7 @@ export default function CheckoutPayPage() {
           className="space-y-6 rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-6"
         >
           <div>
-            <h2 className="text-2xl font-bold">Datos del cliente</h2>
+            <h2 className="text-2xl font-bold">Tus datos</h2>
           </div>
 
           <div className="grid gap-4 md:grid-cols-3">
@@ -413,6 +374,29 @@ export default function CheckoutPayPage() {
               />
             </label>
           </div>
+          {/* TODO: add discount code input and verify with the backend 
+          and add the horario de entrega dropdown list
+          */}
+          <label className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-nowrap">Codigo de descuento</span>
+            <input 
+              className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-1 py-1"
+              type="text"
+            />
+          </label>
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-nowrap">Horario de entrega</span>
+            <select 
+              className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-1 py-1"
+            >
+              <option value="10:00">10:00</option>
+              <option value="11:00">11:00</option>
+              <option value="12:00">12:00</option>
+              <option value="13:00">13:00</option>
+              <option value="14:00">14:00</option>
+              <option value="15:00">15:00</option>
+            </select>
+          </div>
 
           <label className="block space-y-2">
             <span className="text-sm font-semibold">Notas del pedido</span>
@@ -437,7 +421,7 @@ export default function CheckoutPayPage() {
           <button
             type="submit"
             disabled={!officialCart || isSubmitting || isLoadingCart}
-            className="rounded-sm bg-[var(--color-accent-secondary)] px-5 py-3 font-semibold text-[var(--color-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-sm bg-[var(--color-accent-secondary)] px-5 py-3 font-semibold w-full text-center text-[var(--color-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? "Redirigiendo a Mercado Pago..." : "Pagar con Mercado Pago"}
           </button>

@@ -10,16 +10,6 @@ export default function Home() {
 
   return (
     <main className="bg-[var(--color-accent-primary)] min-h-screen">
-      <header>
-        <nav>
-          <ul>
-            <li>
-              <Link href="/">Home</Link>
-            </li>
-          </ul>
-        </nav>
-      </header>
-
       <h1 className="text-4xl font-bold text-center">{message}</h1>
         <div className="flex justify-center gap-4">
           <button className="bg-[var(--color-accent-secondary)] hover:bg-[var(--color-accent-primary)] text-white p-2 rounded-4xl"
