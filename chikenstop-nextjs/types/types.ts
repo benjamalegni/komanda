@@ -73,7 +73,6 @@ export type CustomerInfo = {
 export type CheckoutFormValues = {
   customer: CustomerInfo;
   notes: string;
-  discountCode: string;
 };
 
 export type CreateOrderPayload = {
