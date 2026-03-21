@@ -2,17 +2,9 @@
 1. Run setup_raspberry_print_service.sh (complete setup) only once.
 2. Run worker with run_worker.sh
 
-Variables in .env:
-
-- `PRINT_SERVICE_BASE_URL`
-- `PRINT_SERVICE_TOKEN`
-- `PRINTER_USB_VENDOR_ID`
-- `PRINTER_USB_PRODUCT_ID`
-- `PRINTER_USB_INTERFACE`
-- `PRINTER_USB_IN_EP`
-- `PRINTER_USB_OUT_EP`
-- `PRINT_SERVICE_TIMEOUT_SECONDS`
-- `PRINT_SERVICE_POLL_INTERVAL_SECONDS`
+Variable in .env:
+- PRINTER_NAME: The name of the printer as recognized by the system. You can find this by running `lsusb` in the terminal.
+Without the printer name given in advance, the print service will attempt to find a compatible printer automatically, but this can lead to issues if there are multiple printers or if the printer is not recognized correctly.
 
 ## USB diagnostics
 

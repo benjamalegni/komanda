@@ -37,6 +37,13 @@ if [ -f "$WORKER_ENV_FILE" ]; then
   set +a
 fi
 
+# Auto-detect USB endpoints from connected printer (required for printing)
+if [ -x "$SCRIPT_DIR/utils/get_printer_info.sh" ]; then
+  # eval only the export lines (stderr goes to terminal)
+  # Do NOT use || true: if detection fails, we must stop to avoid wrong USB params
+  eval "$("$SCRIPT_DIR/utils/get_printer_info.sh")"
+fi
+
 ensure_conda_available
 
 if ! command -v conda >/dev/null 2>&1; then
@@ -57,4 +64,4 @@ if [ ! -f "$WORKER_ENV_FILE" ]; then
   exit 1
 fi
 
-exec conda run --prefix "$ENV_DIR" python "$WORKER_FILE"
+exec conda run --prefix "$ENV_DIR" --no-capture-output python "$WORKER_FILE"
