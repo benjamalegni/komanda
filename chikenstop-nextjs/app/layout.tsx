@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,6 +28,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <header className="bg-[var(--color-accent-secondary)] text-[var(--color-accent-primary)] p-4">
+          <Link href="/">
+            CHIKEN STOP
+          </Link>
+        </header>
         {children}
       </body>
     </html>
