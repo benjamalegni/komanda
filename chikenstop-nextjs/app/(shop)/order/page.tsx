@@ -3,6 +3,8 @@ import OrderShell from "@/features/shop/order/components/OrderShell";
 import { getCategories, getMenuItems } from "@/features/shop/menu/services/menu.service";
 import type { MenuItem } from "@/types/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function Order() {
   const [categories, items] = await Promise.all([getCategories(), getMenuItems()]);
 
