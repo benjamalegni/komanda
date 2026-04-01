@@ -130,6 +130,7 @@ function mapPrintJobStatus(status: PrintJobStatus): CheckoutPaymentPrintStatus {
 
 function buildPrintJobPayload(input: {
   orderId: string;
+  purchaseNumber: string;
   checkoutPaymentId: string;
   paymentId: string;
   preferenceId: string;
@@ -140,10 +141,13 @@ function buildPrintJobPayload(input: {
 }): PrintJobPayload {
   return {
     orderId: input.orderId,
+    purchaseNumber: input.purchaseNumber,
     cartId: input.cart.id,
     checkoutPaymentId: input.checkoutPaymentId,
     paymentId: input.paymentId,
     preferenceId: input.preferenceId,
+    source: "mercadopago-webhook",
+    copies: 1,
     customer: input.customer,
     notes: input.notes,
     currency: input.cart.currency,
@@ -550,6 +554,7 @@ async function syncPaymentAttemptFromMercadoPago(params: {
         idempotencyKey: buildPrintJobIdempotencyKey(order.id),
         payload: buildPrintJobPayload({
           orderId: order.id,
+          purchaseNumber: order.purchaseNumber,
           checkoutPaymentId: claimedAttempt.id,
           paymentId,
           preferenceId: resolvedPreferenceId,

@@ -8,6 +8,7 @@ type OrderApiResponse = {
   id?: string;
   orderId?: string;
   status?: string;
+  purchaseNumber?: string;
 };
 
 function ensureApiBaseUrl() {
@@ -44,6 +45,7 @@ export async function createOrder(
 
   return {
     id,
-    status: data.status,
+    purchaseNumber: String(data.purchaseNumber ?? id),
+    status: data.status === "delivered" ? "delivered" : "approved",
   };
 }

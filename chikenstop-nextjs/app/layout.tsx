@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Chiken Stop",
-  description: "Chiken Stop",
+  title: "Hamburguesas de Autor",
+  description: "Hamburguesas de Autor",
 };
 
 export default function RootLayout({
@@ -28,12 +28,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="bg-[var(--color-accent-secondary)] text-[var(--color-accent-primary)] p-4">
-          <Link href="/">
-            CHIKEN STOP
+        <header className="bg-[var(--color-accent-secondary)] flex justify-between items-center px-6 py-4 shadow-md sticky top-0 z-50 border-black border-b-6">
+          <Link href="/" className="text-[var(--color-accent-primary)] font-black text-xl tracking-tight uppercase hover:text-white/90 transition-colors duration-200">
+            Hamburguesas <span className="text-[var(--color-accent-tertiary)]">De Autor</span>
+          </Link>
+          <Link href="/order" className="bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-tertiary)] text-[var(--color-accent-secondary)] font-bold py-2 px-5 rounded-full hover:-translate-y-0.5 hover:text-[var(--color-accent-primary)] transition-all duration-200 text-sm uppercase tracking-wide">
+            PEDI AHORA
           </Link>
         </header>
         {children}
+        <footer className="bg-[var(--color-accent-primary)] text-[var(--color-accent-secondary)] underline p-2 text-center">
+          <Link href="/admin">
+            Admin panel
+          </Link>
+        </footer>
       </body>
     </html>
   );

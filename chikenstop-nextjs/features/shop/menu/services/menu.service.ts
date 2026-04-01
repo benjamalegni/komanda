@@ -22,7 +22,7 @@ function menuItemPath(documentId: string): string {
 
 type StrapiMedia = {
   url?: string;
-} | null;
+} | string | null | undefined;
 
 type StrapiCategory = {
   documentId: string;

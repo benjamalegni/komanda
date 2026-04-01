@@ -79,53 +79,67 @@ class PrintWorker:
     def print_job(self, job: dict) -> None:
         payload = job["payload"]
         printer = self.build_printer()
+        raw_copies = payload.get("copies", 1)
 
         try:
-            printer.set(align="center", bold=True, width=2, height=2)
-            printer.text("CHIKEN STOP\n")
-            printer.set(align="center", bold=False, width=1, height=1)
-            printer.text("Comanda pagada\n")
-            printer.text(f"Orden #{payload['orderId']}\n")
-            printer.text(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-            printer.text("--------------------------------\n")
+            copies = max(int(raw_copies), 1)
+        except (TypeError, ValueError):
+            copies = 1
 
-            printer.set(align="left", bold=False)
-            customer = payload.get("customer") or {}
-            printer.text(f"Cliente: {customer.get('name', 'Sin nombre')}\n")
-            phone = customer.get("phone")
-            if phone:
-                printer.text(f"Telefono: {phone}\n")
+        subtitle = "Comanda admin" if payload.get("source") == "admin-direct" else "Comanda pagada"
 
-            notes = payload.get("notes")
-            if notes:
-                printer.text(f"Notas: {notes}\n")
+        try:
+            for copy_index in range(copies):
+                printer.set(align="center", bold=True, width=2, height=2)
+                printer.text("HAMBURGUESAS DE AUTOR\n")
+                printer.set(align="center", bold=False, width=1, height=1)
+                printer.text(f"{subtitle}\n")
+                if copies > 1:
+                    printer.text(f"Copia {copy_index + 1}/{copies}\n")
+                purchase_number = payload.get("purchaseNumber")
+                if purchase_number:
+                    printer.text(f"Compra #{purchase_number}\n")
+                printer.text(f"Orden #{payload['orderId']}\n")
+                printer.text(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                printer.text("--------------------------------\n")
 
-            printer.text("--------------------------------\n")
-            for item in payload.get("items", []):
-                quantity = item.get("quantity", 0)
-                name = item.get("name", "Item")
-                line_total = float(item.get("lineTotal", 0))
-                printer.set(align="left", bold=True)
-                printer.text(f"{quantity} x {name}\n")
                 printer.set(align="left", bold=False)
-                printer.text(f"    ${line_total:,.2f}\n")
+                customer = payload.get("customer") or {}
+                printer.text(f"Cliente: {customer.get('name', 'Sin nombre')}\n")
+                phone = customer.get("phone")
+                if phone:
+                    printer.text(f"Telefono: {phone}\n")
 
-                item_note = item.get("note")
-                if item_note:
-                    printer.text(f"    Nota: {item_note}\n")
+                notes = payload.get("notes")
+                if notes:
+                    printer.text(f"Notas: {notes}\n")
 
-            printer.text("--------------------------------\n")
-            summary = payload.get("summary") or {}
-            printer.text(f"Subtotal: ${float(summary.get('subtotal', 0)):,.2f}\n")
-            printer.text(f"Descuento: ${float(summary.get('discountTotal', 0)):,.2f}\n")
-            printer.set(align="left", bold=True)
-            printer.text(f"Total: ${float(summary.get('total', 0)):,.2f}\n")
-            printer.set(align="left", bold=False)
-            printer.text("--------------------------------\n")
-            printer.text(f"Pago ID: {payload.get('paymentId', '-')}\n")
-            printer.text(f"Cart ID: {payload.get('cartId', '-')}\n")
-            printer.text("\n\n")
-            printer.cut()
+                printer.text("--------------------------------\n")
+                for item in payload.get("items", []):
+                    quantity = item.get("quantity", 0)
+                    name = item.get("name", "Item")
+                    line_total = float(item.get("lineTotal", 0))
+                    printer.set(align="left", bold=True)
+                    printer.text(f"{quantity} x {name}\n")
+                    printer.set(align="left", bold=False)
+                    printer.text(f"    ${line_total:,.2f}\n")
+
+                    item_note = item.get("note")
+                    if item_note:
+                        printer.text(f"    Nota: {item_note}\n")
+
+                printer.text("--------------------------------\n")
+                summary = payload.get("summary") or {}
+                printer.text(f"Subtotal: ${float(summary.get('subtotal', 0)):,.2f}\n")
+                printer.text(f"Descuento: ${float(summary.get('discountTotal', 0)):,.2f}\n")
+                printer.set(align="left", bold=True)
+                printer.text(f"Total: ${float(summary.get('total', 0)):,.2f}\n")
+                printer.set(align="left", bold=False)
+                printer.text("--------------------------------\n")
+                printer.text(f"Pago ID: {payload.get('paymentId', '-')}\n")
+                printer.text(f"Cart ID: {payload.get('cartId', '-')}\n")
+                printer.text("\n\n")
+                printer.cut()
         finally:
             with suppress(Exception):
                 printer.close()

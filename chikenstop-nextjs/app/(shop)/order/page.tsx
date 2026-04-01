@@ -27,7 +27,7 @@ export default async function Order() {
 
   return (
     <OrderShell>
-      <main className="space-y-6 p-4">
+      <main className="space-y-6 p-4 bg-[var(--color-accent-primary)] min-h-screen">
         <header className="space-y-2 text-[var(--color-accent-secondary)]">
           {/*
            /////////////

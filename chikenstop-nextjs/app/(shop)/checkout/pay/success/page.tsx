@@ -6,6 +6,11 @@ type SuccessPageProps = {
     payment_id?: string | string[];
     status?: string | string[];
     collection_status?: string | string[];
+    source?: string | string[];
+    order_id?: string | string[];
+    purchase_number?: string | string[];
+    customer_name?: string | string[];
+    print_status?: string | string[];
   }>;
 };
 
@@ -15,7 +20,14 @@ function getSingleValue(value: string | string[] | undefined) {
 
 export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPageProps) {
   const resolvedSearchParams = await searchParams;
+  const source = getSingleValue(resolvedSearchParams.source)?.trim().toLowerCase() ?? "";
   const paymentId = getSingleValue(resolvedSearchParams.payment_id)?.trim() ?? "";
+  const adminOrderId = getSingleValue(resolvedSearchParams.order_id)?.trim() ?? "";
+  const adminPurchaseNumber =
+    getSingleValue(resolvedSearchParams.purchase_number)?.trim() ?? "";
+  const adminCustomerName = getSingleValue(resolvedSearchParams.customer_name)?.trim() ?? "";
+  const adminPrintStatus =
+    getSingleValue(resolvedSearchParams.print_status)?.trim().toLowerCase() ?? "";
   const paymentStatus = (
     getSingleValue(resolvedSearchParams.status) ??
     getSingleValue(resolvedSearchParams.collection_status) ??
@@ -23,32 +35,38 @@ export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPa
   )
     .trim()
     .toLowerCase();
-  const shouldConfirmPayment = Boolean(paymentId) && paymentStatus === "approved";
+  const isAdminDirectOrder = source === "admin-direct" && Boolean(adminOrderId);
+  const shouldConfirmPayment =
+    !isAdminDirectOrder && Boolean(paymentId) && paymentStatus === "approved";
   const confirmation = shouldConfirmPayment
     ? await confirmMercadoPagoPaymentById(paymentId)
     : null;
   const isErrorState =
     confirmation?.kind === "error" || confirmation?.kind === "missing_attempt";
-  function previewOrderId(orderId: string) {
-    const trimmed = orderId.trim();
-    return trimmed.length > 8 ? trimmed.slice(-6) : trimmed;
-  }
 
-  const name = confirmation?.customerName?.trim() ?? "";
+  const name = isAdminDirectOrder
+    ? adminCustomerName
+    : (confirmation?.customerName?.trim() ?? "");
+  const purchaseNumber = isAdminDirectOrder
+    ? adminPurchaseNumber
+    : confirmation && "purchaseNumber" in confirmation
+      ? confirmation.purchaseNumber
+      : "";
   const greeting = name ? `¡Hola ${name}! ` : "";
   const title =
-    isErrorState
+    isAdminDirectOrder
+      ? "Pedido creado"
+      : isErrorState
       ? "Ocurrió un error"
       : confirmation?.kind === "confirmed" || confirmation?.kind === "already_confirmed"
         ? "Pago exitoso"
         : "Pago recibido";
 
-  const orderPreview =
-    confirmation && "orderId" in confirmation
-      ? ` #${previewOrderId(confirmation.orderId)}`
-      : "";
+  const purchaseNumberLabel = purchaseNumber ? `Compra #${purchaseNumber}` : "";
 
-  const message = isErrorState
+  const message = isAdminDirectOrder
+    ? `Creamos pedido de ${name} como administrador. Cobrar en caja al cliente.`
+    : isErrorState
     ? confirmation?.kind === "missing_attempt"
       ? `${greeting}No pudimos confirmar tu pedido ahora.`
       : `${greeting}No pudimos confirmar tu pago.`
@@ -62,23 +80,27 @@ export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPa
             : `${greeting}Tu pago está siendo procesado. Seguimos con la confirmación.`
       : "Pago recibido. Estamos confirmando tu pedido.";
 
-  const detail = confirmation
+  const detail = isAdminDirectOrder
+    ? adminPrintStatus === "failed"
+      ? `${purchaseNumberLabel || `Pedido ${adminOrderId}`}. Se creó correctamente, pero no pudimos enviarlo a la cola de impresión.`
+      : `${purchaseNumberLabel || `Pedido ${adminOrderId}`}. Ya lo enviamos a la cola de impresión.`
+    : confirmation
     ? isErrorState
       ? confirmation.kind === "missing_attempt" || confirmation.kind === "error"
         ? confirmation.error
         : "Estamos revisando tu pedido."
       : confirmation.kind === "confirmed"
-        ? `Pedido${orderPreview}. Tu pedido está en proceso.`
+        ? `${purchaseNumberLabel || `Pedido ${confirmation.orderId}`}. Tu pedido está en proceso.`
         : confirmation.kind === "already_confirmed"
-          ? `Pedido${orderPreview}. Tu pedido está en proceso.`
+          ? `${purchaseNumberLabel || `Pedido ${confirmation.orderId}`}. Tu pedido está en proceso.`
           : confirmation.kind === "status_updated"
             ? "Seguimos con la confirmación de tu pedido."
             : "Estamos revisando tu pedido. En breve vas a ver el resultado."
     : "Estamos confirmando tu pedido. En breve vas a ver el resultado.";
 
   const containerClassName = isErrorState
-    ? "mx-auto max-w-3xl rounded-sm border border-red-700 bg-white/40 p-6"
-    : "mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-6";
+    ? "mx-auto max-w-3xl rounded-sm border border-red-700 bg-[var(--color-accent-tertiary)]/40 p-6"
+    : "mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-6";
 
   return (
     <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
@@ -87,6 +109,11 @@ export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPa
           {title}
         </h1>
         <p className="mt-3">{message}</p>
+        {purchaseNumber ? (
+          <p className="mt-4 inline-flex rounded-full border border-[var(--color-accent-secondary)] px-4 py-2 text-sm font-semibold">
+            Numero de compra #{purchaseNumber}
+          </p>
+        ) : null}
         <p className={isErrorState ? "mt-3 text-sm text-red-700" : "mt-3 text-sm opacity-80"}>
           {detail}
         </p>

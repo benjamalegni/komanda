@@ -4,6 +4,7 @@ import { getOfficialCartById } from "@/features/shop/cart/server/cart.store";
 import {
   buildOrderRequestIdempotencyKey,
   createOrder,
+  getOrderById,
 } from "@/features/shop/checkout/server/order.service";
 import { getMercadoPagoPayment } from "@/features/shop/payments/server/mercadopago.service";
 import { createPrintJob } from "@/features/shop/payments/server/print-job.store";
@@ -28,6 +29,7 @@ export type PaymentConfirmationResult =
       kind: "confirmed";
       paymentId: string;
       orderId: string;
+      purchaseNumber: string;
       customerName: string;
       cartId: string;
       printJobId: string | null;
@@ -37,6 +39,7 @@ export type PaymentConfirmationResult =
       kind: "already_confirmed";
       paymentId: string;
       orderId: string;
+      purchaseNumber: string;
       customerName: string;
     }
   | {
@@ -102,6 +105,7 @@ function toErrorMessage(error: unknown) {
 
 function buildPrintJobPayload(input: {
   orderId: string;
+  purchaseNumber: string;
   checkoutPaymentId: string;
   paymentId: string;
   preferenceId: string;
@@ -112,10 +116,13 @@ function buildPrintJobPayload(input: {
 }): PrintJobPayload {
   return {
     orderId: input.orderId,
+    purchaseNumber: input.purchaseNumber,
     cartId: input.cart.id,
     checkoutPaymentId: input.checkoutPaymentId,
     paymentId: input.paymentId,
     preferenceId: input.preferenceId,
+    source: "mercadopago-webhook",
+    copies: 1,
     customer: input.customer,
     notes: input.notes,
     currency: input.cart.currency,
@@ -158,10 +165,13 @@ export async function confirmMercadoPagoPaymentById(
   const existingCustomerName = existingAttemptByPaymentId?.customer.name;
 
   if (existingAttemptByPaymentId?.orderId) {
+    const existingOrder = await getOrderById(existingAttemptByPaymentId.orderId);
+
     return {
       kind: "already_confirmed",
       paymentId: paymentRecordId,
       orderId: existingAttemptByPaymentId.orderId,
+      purchaseNumber: existingOrder?.purchaseNumber ?? existingAttemptByPaymentId.orderId,
       customerName: existingCustomerName ?? "Cliente",
     };
   }
@@ -310,6 +320,7 @@ export async function confirmMercadoPagoPaymentById(
         idempotencyKey: buildPrintJobIdempotencyKey(order.id),
         payload: buildPrintJobPayload({
           orderId: order.id,
+          purchaseNumber: order.purchaseNumber,
           checkoutPaymentId: claimedAttempt.id,
           paymentId: paymentRecordId,
           preferenceId: resolvedPreferenceId,
@@ -353,6 +364,7 @@ export async function confirmMercadoPagoPaymentById(
       kind: "confirmed",
       paymentId: paymentRecordId,
       orderId: order.id,
+      purchaseNumber: order.purchaseNumber,
       customerName: claimedAttempt.customer.name,
       cartId: officialCart.id,
       printJobId,

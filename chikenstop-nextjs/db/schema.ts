@@ -193,3 +193,11 @@ export const printJobs = pgTable(
     uniqueIndex("print_jobs_idempotency_key_idx").on(table.idempotencyKey),
   ],
 );
+
+export const adminUsers = pgTable(
+  "admin_users",
+  {
+    username: text("username").notNull().primaryKey(),
+    passwordHash: text("password_hash").notNull(),
+  },
+);

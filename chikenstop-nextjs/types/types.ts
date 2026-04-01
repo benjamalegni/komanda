@@ -66,9 +66,11 @@ export type OfficialCart = {
 // !!!! may be adding more of this later
 export type CustomerInfo = {
   name: string;
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
 };
+
+export type OrderSource = "mercadopago-webhook" | "admin-direct";
 
 export type CheckoutFormValues = {
   customer: CustomerInfo;
@@ -84,7 +86,20 @@ export type CreateOrderPayload = {
 
 export type CreatedOrder = {
   id: string;
-  status?: string;
+  purchaseNumber: string;
+  status: OrderStatus;
+};
+
+export type AdminDashboardOrder = {
+  id: string;
+  purchaseNumber: string;
+  status: OrderStatus;
+  customer: CustomerInfo;
+  notes: string | null;
+  source: OrderSource | null;
+  approvedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type OrderRequestMetadata = {
@@ -93,10 +108,11 @@ export type OrderRequestMetadata = {
   preferenceId: string;
   orderRequestIdempotencyKey: string;
   approvedAt: string;
-  source: "mercadopago-webhook";
+  source: OrderSource;
+  purchaseNumber?: string;
 };
 
-export type OrderStatus = "approved";
+export type OrderStatus = "approved" | "delivered";
 
 export type CheckoutPaymentStatus =
   | "initiated"
@@ -116,12 +132,17 @@ export type CheckoutPaymentPrintStatus =
 
 export type PrintJobStatus = "pending" | "processing" | "printed" | "failed";
 
+export type PrintJobSource = "mercadopago-webhook" | "admin-direct";
+
 export type PrintJobPayload = {
   orderId: string;
+  purchaseNumber: string;
   cartId: string;
   checkoutPaymentId: string;
   paymentId: string;
   preferenceId: string;
+  source: PrintJobSource;
+  copies: number;
   customer: CustomerInfo;
   notes?: string;
   currency: string;
@@ -139,7 +160,6 @@ export type CreatePaymentSessionPayload = {
   cartId: string;
   customer: CustomerInfo;
   notes?: string;
-  discountCode?: string;
 };
 
 export type PaymentSession = {

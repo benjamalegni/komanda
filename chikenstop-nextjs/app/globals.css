@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --color-accent-primary: #f0bf4c;
-  --color-accent-secondary: #442500;
+  --color-accent-primary: #18181b;
+  --color-accent-secondary: #f59e0b;
+  --color-accent-tertiary: #f3e2bf;
 }

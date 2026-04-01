@@ -14,8 +14,10 @@
   "dependencies": {
     "@mercadopago/sdk-react": "^1.0.7",
     "@neondatabase/serverless": "^1.0.2",
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
+    "jose": "^6.2.2",
     "mercadopago": "^2.12.0",
     "next": "16.1.6",
     "react": "19.2.3",
@@ -23,6 +25,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

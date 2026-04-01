@@ -84,6 +84,10 @@ function toMercadoPagoPhone(phone: string) {
     : undefined;
 }
 
+function buildFallbackPayerEmail(paymentId: string) {
+  return `checkout+${paymentId}@example.com`;
+}
+
 function buildPreferenceRequest(input: CreatePreferenceInput): PreferenceRequest {
   const baseUrl = toTrailingSlashlessUrl(input.baseUrl);
   const webhookUrl =
@@ -106,16 +110,14 @@ function buildPreferenceRequest(input: CreatePreferenceInput): PreferenceRequest
     payer: {
       name: firstName,
       surname: lastName || undefined,
-      email: input.customer.email,
-      phone: toMercadoPagoPhone(input.customer.phone),
+      email: input.customer.email?.trim() || buildFallbackPayerEmail(input.paymentId),
+      phone: input.customer.phone ? toMercadoPagoPhone(input.customer.phone) : undefined,
     },
     metadata: {
       checkoutPaymentId: input.paymentId,
       cartId: input.cart.id,
       notes: input.notes ?? null,
       customerName: input.customer.name,
-      customerEmail: input.customer.email,
-      customerPhone: input.customer.phone,
     },
     items: input.cart.items.map((item) => ({
       id: item.documentId,

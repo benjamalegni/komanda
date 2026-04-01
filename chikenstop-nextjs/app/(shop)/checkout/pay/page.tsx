@@ -16,8 +16,6 @@ import OfficialCartSkeleton from "@/features/shop/checkout/components/skeleton/S
 const initialFormValues: CheckoutFormValues = {
   customer: {
     name: "",
-    email: "",
-    phone: "",
   },
   notes: "",
 };
@@ -60,10 +58,10 @@ function OfficialCartSummary({
   officialCart: OfficialCart;
 }) {
   return (
-    <section className="rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-4">
+    <section className="rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-4">
       <div className="mb-4">
         <h2 className="text-xl font-bold">Tu carrito</h2>
-        <p className="text-sm opacity-80">
+        <p className="text-sm text-white">
           Los totales y disponibilidad son confirmados por el sistema.
         </p>
       </div>
@@ -232,7 +230,7 @@ export default function CheckoutPayPage() {
       setSubmitError(
         error instanceof Error
           ? error.message
-          : "No se pudo iniciar el pago con Mercado Pago.",
+          : "No se pudo continuar con el pedido.",
       );
     } finally {
       setIsSubmitting(false);
@@ -242,7 +240,7 @@ export default function CheckoutPayPage() {
   if (!isHydrated) {
     return (
       <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
-        <div className="mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-6">
+        <div className="mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-6">
           <p>Cargando checkout...</p>
         </div>
       </main>
@@ -252,7 +250,7 @@ export default function CheckoutPayPage() {
   if (snapshot.length === 0) {
     return (
       <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
-        <div className="mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-6">
+        <div className="mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-6">
           <h1 className="text-3xl font-bold">Checkout</h1>
           <p className="mt-3">Tu carrito esta vacio.</p>
           <button
@@ -270,14 +268,14 @@ export default function CheckoutPayPage() {
   return (
     <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
       <div className="mx-auto max-w-4xl space-y-6">
-        <div className="flex flex-col gap-3 rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.2em]">Checkout seguro</p>
             <h1 className="text-3xl font-bold">Revision final del pedido</h1>
-            <p className="mt-2 text-sm opacity-80">
-              Revisa los productos y el monto final antes de pagar.
+            <p className="mt-2 text-sm text-white">
+              Revisa los productos y el monto final antes de continuar.
             </p>
-            <p className="mt-2 text-sm opacity-90 underline">
+            <p className="mt-2 text-sm text-white underline">
               No podras modificarlo luego.
             </p>
           </div>
@@ -297,7 +295,7 @@ export default function CheckoutPayPage() {
         ) : null}
 
         {!isLoadingCart && !officialCart && cartError ? (
-          <section className="rounded-sm border border-red-700 bg-white/40 p-4 text-red-700">
+          <section className="rounded-sm border border-red-700 bg-[var(--color-accent-tertiary)]/40 p-4 text-red-700">
             <p className="font-semibold">No pudimos validar tu carrito.</p>
             <p className="mt-2 text-sm">{cartError}</p>
             <button
@@ -312,13 +310,14 @@ export default function CheckoutPayPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 rounded-sm border border-[var(--color-accent-secondary)] bg-white/40 p-6"
+          className="space-y-6 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-6"
         >
           <div>
             <h2 className="text-2xl font-bold">Tus datos</h2>
+            <h3 className="text-sm text-white">Te llamaremos por este nombre.</h3>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4">
             <label className="space-y-2">
               <span className="text-sm font-semibold">Nombre</span>
               <input
@@ -336,66 +335,6 @@ export default function CheckoutPayPage() {
                 className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-3 py-2"
               />
             </label>
-
-            <label className="space-y-2">
-              <span className="text-sm font-semibold">Email</span>
-              <input
-                required
-                type="email"
-                value={formValues.customer.email}
-                onChange={(event) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    customer: {
-                      ...current.customer,
-                      email: event.target.value,
-                    },
-                  }))
-                }
-                className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-3 py-2"
-              />
-            </label>
-
-            <label className="space-y-2">
-              <span className="text-sm font-semibold">Telefono</span>
-              <input
-                required
-                value={formValues.customer.phone}
-                onChange={(event) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    customer: {
-                      ...current.customer,
-                      phone: event.target.value,
-                    },
-                  }))
-                }
-                className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-3 py-2"
-              />
-            </label>
-          </div>
-          {/* TODO: add discount code input and verify with the backend 
-          and add the horario de entrega dropdown list
-          */}
-          <label className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-nowrap">Codigo de descuento</span>
-            <input 
-              className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-1 py-1"
-              type="text"
-            />
-          </label>
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-nowrap">Horario de entrega</span>
-            <select 
-              className="w-full rounded-sm border border-[var(--color-accent-secondary)] bg-transparent px-1 py-1"
-            >
-              <option value="10:00">10:00</option>
-              <option value="11:00">11:00</option>
-              <option value="12:00">12:00</option>
-              <option value="13:00">13:00</option>
-              <option value="14:00">14:00</option>
-              <option value="15:00">15:00</option>
-            </select>
           </div>
 
           <label className="block space-y-2">
@@ -423,7 +362,7 @@ export default function CheckoutPayPage() {
             disabled={!officialCart || isSubmitting || isLoadingCart}
             className="rounded-sm bg-[var(--color-accent-secondary)] px-5 py-3 font-semibold w-full text-center text-[var(--color-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isSubmitting ? "Redirigiendo a Mercado Pago..." : "Pagar con Mercado Pago"}
+            {isSubmitting ? "Procesando pedido..." : "Continuar con el pedido"}
           </button>
         </form>
       </div>

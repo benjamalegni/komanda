@@ -30,7 +30,7 @@ export default function MobileCartDrawer() {
             type="button"
             aria-label="Cerrar carrito"
             onClick={() => setIsOpen(false)}
-            className="absolute inset-0 bg-black/40"
+            className="absolute inset-0 bg-[var(--color-accent-primary)]/70"
           />
 
           <div className="absolute inset-x-0 bottom-0 h-[85vh] rounded-t-2xl bg-transparent p-2">
