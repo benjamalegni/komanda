@@ -7,12 +7,14 @@ import time
 from contextlib import suppress
 from datetime import datetime
 from textwrap import wrap
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import requests
 from escpos.printer import Usb
 
 
 PRINTER_LINE_WIDTH = 32
+DEFAULT_PRINT_TIMEZONE = "America/Argentina/Buenos_Aires"
 
 
 def require_env(name: str) -> str:
@@ -40,6 +42,25 @@ def safe_int(value: object, fallback: int = 0) -> int:
         return fallback
 
 
+def get_print_timezone() -> ZoneInfo:
+    timezone_name = os.getenv("PRINT_TIMEZONE", DEFAULT_PRINT_TIMEZONE).strip()
+    if not timezone_name:
+        timezone_name = DEFAULT_PRINT_TIMEZONE
+
+    try:
+        return ZoneInfo(timezone_name)
+    except ZoneInfoNotFoundError:
+        print(
+            (
+                "[print-worker] Invalid PRINT_TIMEZONE "
+                f'"{timezone_name}". Falling back to {DEFAULT_PRINT_TIMEZONE}.'
+            ),
+            file=sys.stderr,
+            flush=True,
+        )
+        return ZoneInfo(DEFAULT_PRINT_TIMEZONE)
+
+
 def format_money(value: object, currency: str = "ARS") -> str:
     amount = safe_float(value)
     formatted = f"{amount:,.2f}"
@@ -54,18 +75,19 @@ def format_money(value: object, currency: str = "ARS") -> str:
     return f"{currency.upper()} {formatted}"
 
 
-def format_timestamp(value: object) -> str:
+def format_timestamp(value: object, timezone: ZoneInfo) -> str:
     if isinstance(value, str) and value.strip():
         try:
             normalized = value.strip().replace("Z", "+00:00")
             parsed = datetime.fromisoformat(normalized)
-            if parsed.tzinfo is not None:
-                parsed = parsed.astimezone()
+            if parsed.tzinfo is None:
+                parsed = parsed.replace(tzinfo=ZoneInfo("UTC"))
+            parsed = parsed.astimezone(timezone)
             return parsed.strftime("%d/%m %H:%M")
         except ValueError:
             pass
 
-    return datetime.now().strftime("%d/%m %H:%M")
+    return datetime.now(timezone).strftime("%d/%m %H:%M")
 
 
 def print_rule(printer: Usb, char: str = "-") -> None:
@@ -112,6 +134,7 @@ class PrintWorker:
         self.out_ep = parse_int(os.getenv("PRINTER_USB_OUT_EP", "0x01"))
         self.timeout = int(os.getenv("PRINT_SERVICE_TIMEOUT_SECONDS", "15"))
         self.poll_interval = int(os.getenv("PRINT_SERVICE_POLL_INTERVAL_SECONDS", "5"))
+        self.print_timezone = get_print_timezone()
         self.session = requests.Session()
         self.session.headers.update(
             {
@@ -161,7 +184,7 @@ class PrintWorker:
         raw_copies = payload.get("copies", 1)
         source = str(payload.get("source") or "")
         currency = str(payload.get("currency") or "ARS")
-        approved_at = format_timestamp(payload.get("approvedAt"))
+        approved_at = format_timestamp(payload.get("approvedAt"), self.print_timezone)
         customer = payload.get("customer") or {}
         customer_name = str(customer.get("name") or "Sin nombre")
         phone = customer.get("phone")
