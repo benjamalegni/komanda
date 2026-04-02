@@ -4,6 +4,7 @@
 
 Variable in .env:
 - PRINTER_NAME: The name of the printer as recognized by the system. You can find this by running `lsusb` in the terminal.
+- PRINT_TIMEZONE: Timezone used for ticket timestamps (default: `America/Argentina/Buenos_Aires`).
 Without the printer name given in advance, the print service will attempt to find a compatible printer automatically, but this can lead to issues if there are multiple printers or if the printer is not recognized correctly.
 
 ## USB diagnostics
