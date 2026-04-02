@@ -39,7 +39,7 @@ export default async function AdminDashboardPage() {
   const activeOrders = await listOrdersInProgress();
 
   return (
-    <main className="min-h-screen bg-[var(--color-accent-primary)] px-6 py-8 text-[var(--color-accent-secondary)]">
+    <main className="min-h-[100dvh] bg-[var(--color-accent-primary)] px-6 py-8 text-[var(--color-accent-secondary)]">
       <div className="mx-auto max-w-5xl space-y-6">
         <header className="flex flex-col gap-4 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-2">

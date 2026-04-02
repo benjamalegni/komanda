@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
 import { logoutAdmin } from "@/features/admin-panel/actions/logout.action";
@@ -20,6 +20,12 @@ export const metadata: Metadata = {
   description: "Hamburguesas de Autor",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -31,7 +37,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-[var(--color-accent-primary)] antialiased overflow-x-hidden`}
       >
         <header className="bg-[var(--color-accent-secondary)] flex justify-between items-center px-6 py-4 shadow-md sticky top-0 z-50 border-black border-b-6">
           <Link href="/" className="text-[var(--color-accent-primary)] font-black text-xl tracking-tight uppercase hover:text-white/90 transition-colors duration-200">

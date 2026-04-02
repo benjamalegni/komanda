@@ -106,7 +106,7 @@ export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPa
     : "mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6";
 
   return (
-    <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
+    <main className="min-h-[100dvh] bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
       <div className={containerClassName}>
         <h1 className={isErrorState ? "text-3xl font-bold text-red-700" : "text-3xl font-bold"}>
           {title}

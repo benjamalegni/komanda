@@ -239,7 +239,7 @@ export default function CheckoutPayPage() {
 
   if (!isHydrated) {
     return (
-      <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
+      <main className="min-h-[100dvh] bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
         <div className="mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6">
           <p>Cargando checkout...</p>
         </div>
@@ -249,7 +249,7 @@ export default function CheckoutPayPage() {
 
   if (snapshot.length === 0) {
     return (
-      <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
+      <main className="min-h-[100dvh] bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
         <div className="mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6">
           <h1 className="text-3xl font-bold">Checkout</h1>
           <p className="mt-3">Tu carrito esta vacio.</p>
@@ -266,7 +266,7 @@ export default function CheckoutPayPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
+    <main className="min-h-[100dvh] bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="flex flex-col gap-3 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
