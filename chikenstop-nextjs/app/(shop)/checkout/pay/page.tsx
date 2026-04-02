@@ -362,7 +362,7 @@ export default function CheckoutPayPage() {
             disabled={!officialCart || isSubmitting || isLoadingCart}
             className="rounded-sm bg-[var(--color-accent-secondary)] px-5 py-3 font-semibold w-full text-center text-[var(--color-accent-primary)] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isSubmitting ? "Procesando pedido..." : "Continuar con el pedido"}
+            {isSubmitting ? "Procesando pedido..." : "Pagar con Mercado Pago"}
           </button>
         </form>
       </div>

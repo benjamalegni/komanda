@@ -37,7 +37,7 @@ export default async function RootLayout({
           <Link href="/" className="text-[var(--color-accent-primary)] font-black text-xl tracking-tight uppercase hover:text-white/90 transition-colors duration-200">
             Hamburguesas <span className="text-[var(--color-accent-tertiary)]">De Autor</span>
           </Link>
-          <Link href="/order" className="bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-tertiary)] text-[var(--color-accent-secondary)] font-bold py-2 px-5 rounded-full hover:-translate-y-0.5 hover:text-[var(--color-accent-primary)] transition-all duration-200 text-sm uppercase tracking-wide">
+          <Link href="/order" className="shrink-0 whitespace-nowrap bg-[var(--color-accent-primary)] hover:bg-[var(--color-accent-tertiary)] text-[var(--color-accent-secondary)] font-bold py-2 px-5 rounded-full hover:-translate-y-0.5 hover:text-[var(--color-accent-primary)] transition-all duration-200 text-sm uppercase tracking-wide">
             PEDI AHORA
           </Link>
         </header>
