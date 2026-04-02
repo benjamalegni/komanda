@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Link from "next/link";
+import { logoutAdmin } from "@/features/admin-panel/actions/logout.action";
+import { getAuthenticatedAdminSession } from "@/features/admin-panel/server/auth.service";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -18,11 +20,14 @@ export const metadata: Metadata = {
   description: "Hamburguesas de Autor",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const adminSession = await getAuthenticatedAdminSession();
+  const isAdminLoggedIn = Boolean(adminSession);
+
   return (
     <html lang="en">
       <body
@@ -41,6 +46,14 @@ export default function RootLayout({
           <Link href="/admin">
             Admin panel
           </Link>
+          {isAdminLoggedIn ? (
+            <form action={logoutAdmin} className="inline">
+              <span className="mx-2">|</span>
+              <button type="submit" className="hover:opacity-80 transition-opacity duration-200">
+                Cerrar sesion
+              </button>
+            </form>
+          ) : null}
         </footer>
       </body>
     </html>

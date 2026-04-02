@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { confirmMercadoPagoPaymentById } from "@/features/shop/payments/server/payment-confirmation.service";
+import { getAuthenticatedAdminSession } from "@/features/admin-panel/server/auth.service";
 
 type SuccessPageProps = {
   searchParams: Promise<{
@@ -20,6 +21,8 @@ function getSingleValue(value: string | string[] | undefined) {
 
 export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPageProps) {
   const resolvedSearchParams = await searchParams;
+  const adminSession = await getAuthenticatedAdminSession();
+  const isAdminLoggedIn = Boolean(adminSession);
   const source = getSingleValue(resolvedSearchParams.source)?.trim().toLowerCase() ?? "";
   const paymentId = getSingleValue(resolvedSearchParams.payment_id)?.trim() ?? "";
   const adminOrderId = getSingleValue(resolvedSearchParams.order_id)?.trim() ?? "";
@@ -124,6 +127,14 @@ export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPa
           >
             Volver al menu
           </Link>
+          {isAdminLoggedIn ? (
+            <Link
+              href="/admin/dashboard"
+              className="rounded-sm border border-[var(--color-accent-secondary)] px-4 py-3 font-semibold text-[var(--color-accent-secondary)]"
+            >
+              Volver al dashboard
+            </Link>
+          ) : null}
 
           {/* add order status in real time */}
 
