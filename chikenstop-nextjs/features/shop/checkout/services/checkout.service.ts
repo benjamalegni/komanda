@@ -2,41 +2,44 @@
 
 import type { CreateOrderPayload, CreatedOrder } from "@/types/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
+const ORDERS_API_ROUTE = "/api/orders";
 
 type OrderApiResponse = {
   id?: string;
   orderId?: string;
   status?: string;
   purchaseNumber?: string;
+  error?: string;
 };
 
-function ensureApiBaseUrl() {
-  if (!API_BASE_URL) {
-    throw new Error(
-      "Missing NEXT_PUBLIC_API_URL. Configure the checkout backend before creating orders.",
-    );
+async function parseOrderApiResponse(response: Response): Promise<OrderApiResponse> {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (contentType.includes("application/json")) {
+    return (await response.json()) as OrderApiResponse;
   }
 
-  return API_BASE_URL;
+  const text = await response.text();
+
+  return text ? { error: text } : {};
 }
 
 export async function createOrder(
   payload: CreateOrderPayload,
 ): Promise<CreatedOrder> {
-  const response = await fetch(`${ensureApiBaseUrl()}/orders`, {
+  const response = await fetch(ORDERS_API_ROUTE, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
   });
+  const data = await parseOrderApiResponse(response);
 
   if (!response.ok) {
-    throw new Error(`Order request failed with status ${response.status}`);
+    throw new Error(data.error || `Order request failed with status ${response.status}`);
   }
 
-  const data = (await response.json()) as OrderApiResponse;
   const id = String(data.id ?? data.orderId ?? "");
 
   if (!id) {

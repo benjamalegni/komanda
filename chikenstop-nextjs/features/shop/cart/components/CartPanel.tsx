@@ -37,7 +37,7 @@ export default function CartPanel() {
           items.map((cartLine) => (
             <article
               key={cartLine.item.documentId}
-              className="space-y-3 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/30 p-4"
+              className="space-y-3 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-4"
             >
               <CartItem cartLine={cartLine} />
             </article>

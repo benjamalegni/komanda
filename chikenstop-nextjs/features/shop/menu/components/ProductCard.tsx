@@ -28,6 +28,7 @@ export default function ProductCard({ item }: { item: MenuItem }) {
             </div>
 
             <aside className="flex flex-none items-center p-4 pr-12">
+                {/*
                 {item.image ? (
                     <Image
                         className="h-28 w-28 shrink-0 rounded-sm object-cover sm:h-28 sm:w-28"
@@ -37,6 +38,7 @@ export default function ProductCard({ item }: { item: MenuItem }) {
                         height={128}
                     />
                 ) : null}
+                */}
             </aside>
 
             <div className="absolute bottom-3 right-3">

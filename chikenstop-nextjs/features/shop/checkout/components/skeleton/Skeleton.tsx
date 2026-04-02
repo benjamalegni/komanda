@@ -1,6 +1,6 @@
 export default function OfficialCartSkeleton() {
   return (
-    <section className="animate-pulse rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-4">
+    <section className="animate-pulse rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-4">
       <div className="mb-4 space-y-2">
         <div className="h-7 w-40 rounded bg-[var(--color-accent-secondary)]/15" />
         <div className="h-4 w-64 rounded bg-[var(--color-accent-secondary)]/10" />

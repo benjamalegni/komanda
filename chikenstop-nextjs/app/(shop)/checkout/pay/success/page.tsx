@@ -99,8 +99,8 @@ export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPa
     : "Estamos confirmando tu pedido. En breve vas a ver el resultado.";
 
   const containerClassName = isErrorState
-    ? "mx-auto max-w-3xl rounded-sm border border-red-700 bg-[var(--color-accent-tertiary)]/40 p-6"
-    : "mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-6";
+    ? "mx-auto max-w-3xl rounded-sm border border-red-700 bg-[var(--color-accent-primary)] p-6"
+    : "mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6";
 
   return (
     <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">

@@ -58,7 +58,7 @@ function OfficialCartSummary({
   officialCart: OfficialCart;
 }) {
   return (
-    <section className="rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-4">
+    <section className="rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-4">
       <div className="mb-4">
         <h2 className="text-xl font-bold">Tu carrito</h2>
         <p className="text-sm text-white">
@@ -240,7 +240,7 @@ export default function CheckoutPayPage() {
   if (!isHydrated) {
     return (
       <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
-        <div className="mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-6">
+        <div className="mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6">
           <p>Cargando checkout...</p>
         </div>
       </main>
@@ -250,7 +250,7 @@ export default function CheckoutPayPage() {
   if (snapshot.length === 0) {
     return (
       <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
-        <div className="mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-6">
+        <div className="mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6">
           <h1 className="text-3xl font-bold">Checkout</h1>
           <p className="mt-3">Tu carrito esta vacio.</p>
           <button
@@ -268,7 +268,7 @@ export default function CheckoutPayPage() {
   return (
     <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
       <div className="mx-auto max-w-4xl space-y-6">
-        <div className="flex flex-col gap-3 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.2em]">Checkout seguro</p>
             <h1 className="text-3xl font-bold">Revision final del pedido</h1>
@@ -295,7 +295,7 @@ export default function CheckoutPayPage() {
         ) : null}
 
         {!isLoadingCart && !officialCart && cartError ? (
-          <section className="rounded-sm border border-red-700 bg-[var(--color-accent-tertiary)]/40 p-4 text-red-700">
+          <section className="rounded-sm border border-red-700 bg-[var(--color-accent-primary)] p-4 text-red-700">
             <p className="font-semibold">No pudimos validar tu carrito.</p>
             <p className="mt-2 text-sm">{cartError}</p>
             <button
@@ -310,7 +310,7 @@ export default function CheckoutPayPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-6 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-6"
+          className="space-y-6 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6"
         >
           <div>
             <h2 className="text-2xl font-bold">Tus datos</h2>

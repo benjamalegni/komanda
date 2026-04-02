@@ -41,7 +41,7 @@ export default async function AdminDashboardPage() {
   return (
     <main className="min-h-screen bg-[var(--color-accent-primary)] px-6 py-8 text-[var(--color-accent-secondary)]">
       <div className="mx-auto max-w-5xl space-y-6">
-        <header className="flex flex-col gap-4 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-6 lg:flex-row lg:items-end lg:justify-between">
+        <header className="flex flex-col gap-4 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-2">
             <p className="text-sm uppercase tracking-[0.2em]">Panel admin</p>
             <h1 className="text-3xl font-bold">Pedidos en proceso</h1>
@@ -60,7 +60,7 @@ export default async function AdminDashboardPage() {
           </div>
         </header>
 
-        <section className="rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-tertiary)]/40 p-6">
+        <section className="rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6">
           <div className="flex items-center justify-between gap-4 border-b border-[var(--color-accent-secondary)]/20 pb-4">
             <div>
               <h2 className="text-2xl font-bold">Activos</h2>
@@ -82,7 +82,7 @@ export default async function AdminDashboardPage() {
               {activeOrders.map((order) => (
                 <article
                   key={order.id}
-                  className="rounded-sm border border-[var(--color-accent-secondary)]/30 bg-[var(--color-accent-tertiary)]/50 p-5"
+                  className="rounded-sm border border-[var(--color-accent-secondary)]/30 bg-[var(--color-accent-primary)] p-5"
                 >
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                     <div className="space-y-3">
@@ -111,7 +111,7 @@ export default async function AdminDashboardPage() {
                       </div>
 
                       {order.notes ? (
-                        <div className="rounded-sm border border-[var(--color-accent-secondary)]/20 bg-[var(--color-accent-tertiary)]/60 p-3 text-sm">
+                        <div className="rounded-sm border border-[var(--color-accent-secondary)]/20 bg-[var(--color-accent-primary)] p-3 text-sm">
                           <p className="font-semibold">Notas</p>
                           <p className="mt-1 opacity-80">{order.notes}</p>
                         </div>
