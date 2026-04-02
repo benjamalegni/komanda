@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { confirmMercadoPagoPaymentById } from "@/features/shop/payments/server/payment-confirmation.service";
 import { getAuthenticatedAdminSession } from "@/features/admin-panel/server/auth.service";
+import ClearCartOnSuccess from "@/features/shop/checkout/components/ClearCartOnSuccess";
 
 type SuccessPageProps = {
   searchParams: Promise<{
@@ -102,6 +103,9 @@ export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPa
     : "Estamos confirmando tu pedido. En breve vas a ver el resultado.";
 
   const shouldShowPickupNotice = !isAdminDirectOrder && !isErrorState;
+  const shouldClearLocalCart =
+    !isAdminDirectOrder &&
+    (confirmation?.kind === "confirmed" || confirmation?.kind === "already_confirmed");
 
   const containerClassName = isErrorState
     ? "mx-auto max-w-3xl rounded-sm border border-red-700 bg-[var(--color-accent-primary)] p-6"
@@ -109,6 +113,7 @@ export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPa
 
   return (
     <main className="min-h-[100dvh] bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
+      {shouldClearLocalCart ? <ClearCartOnSuccess /> : null}
       <div className={containerClassName}>
         <h1 className={isErrorState ? "text-3xl font-bold text-red-700" : "text-3xl font-bold"}>
           {title}
