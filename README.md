@@ -1,4 +1,4 @@
-# CHIKEN STOP SYSTEM
+# KOMANDA SYSTEM
 
 - Menu changes made only from Strapi CRM
 - Api route on $url + /api/menu to get updated menu from strapi
