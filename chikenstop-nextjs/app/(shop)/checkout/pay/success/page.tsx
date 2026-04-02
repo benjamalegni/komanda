@@ -75,9 +75,9 @@ export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPa
       : `${greeting}No pudimos confirmar tu pago.`
     : confirmation
       ? confirmation.kind === "confirmed"
-        ? `${greeting}Confirmamos tu pedido.`
+        ? `${greeting}Pago exitoso. Tu pedido ya esta en proceso.`
         : confirmation.kind === "already_confirmed"
-          ? `${greeting}Tu pago ya fue confirmado.`
+          ? `${greeting}Tu pago ya fue confirmado y tu pedido sigue en proceso.`
           : confirmation.kind === "status_updated"
             ? `${greeting}Mercado Pago actualizó el estado de tu pago. Seguimos con la confirmación.`
             : `${greeting}Tu pago está siendo procesado. Seguimos con la confirmación.`
@@ -93,20 +93,22 @@ export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPa
         ? confirmation.error
         : "Estamos revisando tu pedido."
       : confirmation.kind === "confirmed"
-        ? `${purchaseNumberLabel || `Pedido ${confirmation.orderId}`}. Tu pedido está en proceso.`
+        ? `${purchaseNumberLabel || `Pedido ${confirmation.orderId}`}. Tu pedido esta en proceso y lo prepararemos para retiro.`
         : confirmation.kind === "already_confirmed"
-          ? `${purchaseNumberLabel || `Pedido ${confirmation.orderId}`}. Tu pedido está en proceso.`
+          ? `${purchaseNumberLabel || `Pedido ${confirmation.orderId}`}. Tu pedido esta en proceso y lo prepararemos para retiro.`
           : confirmation.kind === "status_updated"
             ? "Seguimos con la confirmación de tu pedido."
             : "Estamos revisando tu pedido. En breve vas a ver el resultado."
     : "Estamos confirmando tu pedido. En breve vas a ver el resultado.";
+
+  const shouldShowPickupNotice = !isAdminDirectOrder && !isErrorState;
 
   const containerClassName = isErrorState
     ? "mx-auto max-w-3xl rounded-sm border border-red-700 bg-[var(--color-accent-primary)] p-6"
     : "mx-auto max-w-3xl rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)] p-6";
 
   return (
-    <main className="min-h-screen bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
+    <main className="min-h-[100dvh] bg-[var(--color-accent-primary)] p-6 text-[var(--color-accent-secondary)]">
       <div className={containerClassName}>
         <h1 className={isErrorState ? "text-3xl font-bold text-red-700" : "text-3xl font-bold"}>
           {title}
@@ -120,6 +122,19 @@ export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPa
         <p className={isErrorState ? "mt-3 text-sm text-red-700" : "mt-3 text-sm opacity-80"}>
           {detail}
         </p>
+        {shouldShowPickupNotice ? (
+          <div className="mt-5 rounded-sm border border-[var(--color-accent-secondary)] bg-[var(--color-accent-secondary)]/10 p-4">
+            <p className="font-bold uppercase tracking-wide">
+              Importante para retirar
+            </p>
+            <p className="mt-2 text-sm">
+              Para retirar tu pedido, vas a tener que mostrar esta pantalla en caja.
+            </p>
+            <p className="mt-2 text-sm opacity-90">
+              Recomendacion: sacale screenshot ahora para tenerla a mano.
+            </p>
+          </div>
+        ) : null}
         <div className="mt-6 flex gap-3">
           <Link
             href="/order"

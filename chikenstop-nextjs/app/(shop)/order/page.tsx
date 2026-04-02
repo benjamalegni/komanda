@@ -29,7 +29,7 @@ export default async function Order() {
 
   return (
     <OrderShell>
-      <main className="space-y-6 p-4 bg-[var(--color-accent-primary)] min-h-screen">
+      <main className="space-y-6 p-4 bg-[var(--color-accent-primary)] min-h-[100dvh]">
         <header className="space-y-2 text-[var(--color-accent-secondary)]">
           {/*
            /////////////
@@ -45,7 +45,7 @@ export default async function Order() {
           </p>
         </header>
 
-        <nav className="sticky top-0 z-10 -mx-4 border-y border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)]/95 px-4 py-3 backdrop-blur">
+        <nav className="sticky top-0 z-10 border-y border-[var(--color-accent-secondary)] bg-[var(--color-accent-primary)]/95 py-3 backdrop-blur">
           <div className="flex gap-3 overflow-x-auto pb-1">
             {sections.map((section) => (
               <a

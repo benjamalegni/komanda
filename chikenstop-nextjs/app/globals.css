@@ -5,3 +5,10 @@
   --color-accent-secondary: #f59e0b;
   --color-accent-tertiary: #f3e2bf;
 }
+
+html,
+body {
+  min-height: 100%;
+  overflow-x: hidden;
+  background: var(--color-accent-primary);
+}
