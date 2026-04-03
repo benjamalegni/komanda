@@ -104,8 +104,9 @@ export default async function CheckoutPaySuccessPage({ searchParams }: SuccessPa
 
   const shouldShowPickupNotice = !isAdminDirectOrder && !isErrorState;
   const shouldClearLocalCart =
-    !isAdminDirectOrder &&
-    (confirmation?.kind === "confirmed" || confirmation?.kind === "already_confirmed");
+    isAdminDirectOrder ||
+    confirmation?.kind === "confirmed" ||
+    confirmation?.kind === "already_confirmed";
 
   const containerClassName = isErrorState
     ? "mx-auto max-w-3xl rounded-sm border border-red-700 bg-[var(--color-accent-primary)] p-6"

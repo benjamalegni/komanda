@@ -102,6 +102,11 @@ export type AdminDashboardOrder = {
   updatedAt: string;
 };
 
+export type AdminOrdersStreamPayload = {
+  orders: AdminDashboardOrder[];
+  generatedAt: string;
+};
+
 export type OrderRequestMetadata = {
   checkoutPaymentId: string;
   paymentId: string;
