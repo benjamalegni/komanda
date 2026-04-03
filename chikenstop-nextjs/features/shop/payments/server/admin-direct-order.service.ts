@@ -5,6 +5,7 @@ import {
   createOrder,
   getOrderById,
 } from "@/features/shop/checkout/server/order.service";
+import { createCheckoutOrderSnapshot } from "@/features/shop/payments/server/checkout-order-snapshot";
 import { createPrintJob } from "@/features/shop/payments/server/print-job.store";
 import {
   createCheckoutPaymentAttempt,
@@ -144,6 +145,7 @@ export async function createAdminDirectOrder(
     notes: input.notes,
     amount: input.cart.total,
     currency: input.cart.currency,
+    orderSnapshot: createCheckoutOrderSnapshot(input.cart),
   });
 
   try {

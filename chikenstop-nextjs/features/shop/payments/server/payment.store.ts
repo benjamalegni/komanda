@@ -4,6 +4,7 @@ import { and, desc, eq, inArray, isNotNull, isNull, ne } from "drizzle-orm";
 import { db } from "@/db";
 import { checkoutPayments } from "@/db/schema";
 import type {
+  CheckoutOrderSnapshot,
   CheckoutPaymentPrintStatus,
   CheckoutPaymentStatus,
   CreatePaymentSessionPayload,
@@ -19,6 +20,7 @@ type CreateCheckoutPaymentAttemptInput = {
   notes?: string;
   amount: number;
   currency: string;
+  orderSnapshot?: CheckoutOrderSnapshot;
   status?: CheckoutPaymentStatus;
 };
 
@@ -45,6 +47,7 @@ function serializeCheckoutPayment(record: CheckoutPaymentRecord) {
   return {
     ...record,
     amount: toNumber(record.amount),
+    orderSnapshot: record.orderSnapshot,
   };
 }
 
@@ -63,6 +66,7 @@ export async function createCheckoutPaymentAttempt(
       notes: input.notes,
       amount: input.amount.toFixed(2),
       currency: input.currency,
+      orderSnapshot: input.orderSnapshot,
       status: input.status ?? "initiated",
       printStatus: "not_requested",
       createdAt: now,

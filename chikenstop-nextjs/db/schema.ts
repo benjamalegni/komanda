@@ -10,6 +10,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import type {
+  CheckoutOrderSnapshot,
   CheckoutPaymentPrintStatus,
   CheckoutPaymentStatus,
   CustomerInfo,
@@ -65,6 +66,7 @@ export const checkoutPayments = pgTable(
     notes: text("notes"),
     amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
     currency: text("currency").notNull(),
+    orderSnapshot: jsonb("order_snapshot").$type<CheckoutOrderSnapshot | null>(),
     orderId: text("order_id"),
     orderRequestIdempotencyKey: text("order_request_idempotency_key"),
     printJobId: uuid("print_job_id"),
