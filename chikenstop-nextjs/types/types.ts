@@ -63,8 +63,6 @@ export type OfficialCart = {
   expiresAt?: string;
 };
 
-export type CheckoutOrderSnapshot = OfficialCart;
-
 // !!!! may be adding more of this later
 export type CustomerInfo = {
   name: string;
@@ -92,12 +90,6 @@ export type CreatedOrder = {
   status: OrderStatus;
 };
 
-export type OrderSummary = {
-  subtotal: number;
-  discountTotal: number;
-  total: number;
-};
-
 export type AdminDashboardOrder = {
   id: string;
   purchaseNumber: string;
@@ -108,14 +100,6 @@ export type AdminDashboardOrder = {
   approvedAt: string | null;
   createdAt: string;
   updatedAt: string;
-  items: OfficialCartLine[];
-  currency: string | null;
-  summary: OrderSummary | null;
-};
-
-export type AdminOrdersStreamPayload = {
-  orders: AdminDashboardOrder[];
-  generatedAt: string;
 };
 
 export type OrderRequestMetadata = {

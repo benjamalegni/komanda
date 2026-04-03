@@ -1,10 +1,10 @@
 import { createHmac } from "node:crypto";
 import { NextResponse } from "next/server";
+import { getOfficialCartById } from "@/features/shop/cart/server/cart.store";
 import {
   buildOrderRequestIdempotencyKey,
   createOrder,
 } from "@/features/shop/checkout/server/order.service";
-import { resolveOrderCartForPaymentAttempt } from "@/features/shop/payments/server/checkout-order-snapshot";
 import {
   getMercadoPagoMerchantOrder,
   getMercadoPagoPayment,
@@ -492,7 +492,7 @@ async function syncPaymentAttemptFromMercadoPago(params: {
       });
     }
 
-    const officialCart = await resolveOrderCartForPaymentAttempt(claimedAttempt, cartId);
+    const officialCart = await getOfficialCartById(cartId);
 
     if (!officialCart) {
       await updateCheckoutPaymentAttempt(claimedAttempt.id, {
@@ -506,7 +506,7 @@ async function syncPaymentAttemptFromMercadoPago(params: {
       return NextResponse.json({
         ok: false,
         acknowledged: true,
-        error: `Order snapshot for cart "${cartId}" is unavailable and the temporary cart could not be recovered.`,
+        error: `Cart "${cartId}" was not found or has expired.`,
         paymentId,
       });
     }

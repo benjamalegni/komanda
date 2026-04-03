@@ -10,7 +10,6 @@ import {
   verifyAdminSessionToken,
 } from "@/features/admin-panel/lib/admin-session";
 import { getOfficialCartById } from "@/features/shop/cart/server/cart.store";
-import { createCheckoutOrderSnapshot } from "@/features/shop/payments/server/checkout-order-snapshot";
 import { createAdminDirectOrder } from "@/features/shop/payments/server/admin-direct-order.service";
 import { createCheckoutPaymentAttempt } from "@/features/shop/payments/server/payment.store";
 import { createMercadoPagoPreference } from "@/features/shop/payments/server/mercadopago.service";
@@ -163,7 +162,6 @@ export async function POST(request: Request) {
       notes,
       amount: cart.total,
       currency: cart.currency,
-      orderSnapshot: createCheckoutOrderSnapshot(cart),
     });
 
     return NextResponse.json({
