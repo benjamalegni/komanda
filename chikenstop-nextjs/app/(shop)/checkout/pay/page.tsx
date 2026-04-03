@@ -364,6 +364,7 @@ export default function CheckoutPayPage() {
           >
             {isSubmitting ? "Procesando pedido..." : "Pagar con Mercado Pago"}
           </button>
+          <h1 className="text-xl color-red font-bold text-center">⚠️ Importante: redirigirse a esta pagina luego del pago</h1>
         </form>
       </div>
     </main>
