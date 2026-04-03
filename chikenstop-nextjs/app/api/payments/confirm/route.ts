@@ -9,6 +9,8 @@ export const revalidate = 0;
 
 function getStatusCode(result: PaymentConfirmationResult) {
   switch (result.kind) {
+    case "awaiting_confirmation":
+      return 202;
     case "error":
       return 500;
     case "missing_attempt":
