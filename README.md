@@ -150,11 +150,17 @@ ADMIN_JWT_SECRET=your_admin_jwt_secret_here
 ADMIN_PASSWORD=change_this_to_a_strong_password
 ```
 DATABASE_URL: main database connection for the app. Pooler connection. (NeonDB)
+
 DATABASE_DIRECT_URL: direct database connection for migrations. (NeonDB)
 
+CRON_CART_CLEANUP_SECRET: generated using ```openssl rand -hex 32
+
 STRAPI_FULL_ACCESS_TOKEN: private token for full CMS access. Given in Strapi configuration.
+
 ADMIN_JWT_SECRET: signs admin auth tokens. Generated using ```openssl rand -hex 32
+
 ADMIN_PASSWORD: admin login password to access admin dashboard (with user admin), should be strong.
+
 NEXT_PUBLIC_API_URL: public API URL used by the Nextjs frontend.
 
 #### Cms (Strapi) service application .env.example:
