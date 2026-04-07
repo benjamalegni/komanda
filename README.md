@@ -41,8 +41,11 @@ npm run db:push
 ```
 ### Raspberry Pi
 The recommended way is to set the printer worker in a Raspberry Pi (Raspberry Pi OS lite) is using a systemd service running when the system powers on.
+
 First run ./print-service/setup_raspberry_print_service.sh to install dependencies and set up Conda environment.
+
 Wifi should be set up in advance using raspi-config or nmtui, this is really important to have the raspi working autonomously.
+
 Example Unit file:
 ```
 [Unit]
@@ -102,7 +105,75 @@ After the migration, update the server IP in the Dokploy database:
 UPDATE admin SET "serverIp" = 'new_server_ip' WHERE "serverIp" = 'old_server_ip'; 
 ```
 >[!IMPORTANT]
->Environment variables should be saved in advance for each service running inside dokploy. 
+>Environment variables should be saved in advance for each service running inside dokploy.
+
+## Dokploy Setup
+First create a service application for Nextjs and another for cms(Strapi). Then create a Posgres database service for Strapi content.
+<img width="1566" height="718" alt="image" src="https://github.com/user-attachments/assets/d1a2f27e-510c-42d7-b360-056f50de0227" />
+The cmsdb will provide an "Internal Connection URL" that will be used for connecting to Strapi application.
+
+### Environment variables
+#### Nextjs service application .env.example:
+```txt
+STRAPI_FULL_ACCESS_TOKEN=your_strapi_full_access_token_here
+STRAPI_URL=https://your-strapi-instance.example.com
+
+MP_PUBLIC_KEY=APP_USR-your_public_key_here
+
+# only this to change in production
+NEXT_PUBLIC_API_URL=https://your-production-domain.example.com
+
+MP_ACCESS_TOKEN=APP_USR-your_access_token_here
+
+MP_WEBHOOK_URL=https://your-production-domain.example.com/api/payments/webhook
+MP_WEBHOOK_SECRET=your_mercadopago_webhook_secret_here
+
+# keep Neon credentials secure: do not expose them to client-side code
+# runtime/app traffic should use the Neon pooler
+DATABASE_URL="postgresql://db_user:db_password@your-neon-pooler-host/database_name?sslmode=require&pgbouncer=true&connect_timeout=15"
+
+# schema changes and migrations should use the direct connection
+DATABASE_DIRECT_URL="postgresql://db_user:db_password@your-neon-direct-host/database_name?sslmode=require"
+
+CRON_CART_CLEANUP_SECRET=your_cron_cleanup_secret_here
+
+# this is the time to live for the cart in the database
+# in minutes
+CART_TTL_MINUTES=60
+
+# token used to authenticate with the print service
+PRINT_SERVICE_TOKEN=your_print_service_token_here
+
+# JWT
+ADMIN_JWT_SECRET=your_admin_jwt_secret_here
+
+ADMIN_PASSWORD=change_this_to_a_strong_password
+```
+DATABASE_URL: main database connection for the app. Pooler connection. (NeonDB)
+DATABASE_DIRECT_URL: direct database connection for migrations. (NeonDB)
+
+STRAPI_FULL_ACCESS_TOKEN: private token for full CMS access. Given in Strapi configuration.
+ADMIN_JWT_SECRET: signs admin auth tokens. Generated using ```openssl rand -hex 32
+ADMIN_PASSWORD: admin login password to access admin dashboard (with user admin), should be strong.
+NEXT_PUBLIC_API_URL: public API URL used by the Nextjs frontend.
+
+#### Cms (Strapi) service application .env.example:
+See: https://docs.strapi.io/cms/configurations/environment
+```txt
+HOST=0.0.0.0
+PORT=1337
+APP_KEYS="toBeModified1,toBeModified2"
+API_TOKEN_SALT=tobemodified
+ADMIN_JWT_SECRET=tobemodified
+TRANSFER_TOKEN_SALT=tobemodified
+JWT_SECRET=tobemodified
+ENCRYPTION_KEY=tobemodified
+
+DATABASE_CLIENT=postgres /* given that we will be using postgres on dokploy */
+DATABASE_URL=postgresql://strapi:123456789@hamburguesasdeautor-cmsdb-tbo2g7:5432/hamburguesasdeautor_cms /* Internal Connection URL in db service application */
+DATABASE_SCHEMA=public
+DATABASE_SSL=false
+```
 
 # todo
 
