@@ -28,8 +28,7 @@ npm run db:push
 ## Print Service
 
 - `Next.js` only keeps `PRINT_SERVICE_TOKEN` in `chikenstop-nextjs/.env`.
-- The Raspberry Pi worker now lives in `/print-service`.
-- Setup (in Raspberry PI system):
+- Setup (in Raspberry PI system or running nonstop in a PC):
 
 ```bash
 ./print-service/setup_conda_env.sh
@@ -40,7 +39,29 @@ npm run db:push
 ```bash
 ./print-service/run_worker.sh
 ```
+### Raspberry Pi
+The recommended way is to set the printer worker in a Raspberry Pi (Raspberry Pi OS lite) is using a systemd service running when the system powers on.
+First run ./print-service/setup_raspberry_print_service.sh to install dependencies and set up Conda environment.
+Wifi should be set up in advance using raspi-config or nmtui, this is really important to have the raspi working autonomously.
+Example Unit file:
+```
+[Unit]
+Description=Raspberry Pi Print Service
+After=network-online.target
+Wants=network-online.target
 
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/print-service
+ExecStart=/home/pi/komanda/print-service/run_worker.sh
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
+```
 # Data modelling
 
 As per now, Sprapi v5 does not support polymorphic relations, so the way to model the entities was repetitve and dull at best, but it is what it is. The entities are:
