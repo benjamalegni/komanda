@@ -67,6 +67,21 @@ As per now, Sprapi v5 does not support polymorphic relations, so the way to mode
 
 ---
 
+# VPS Configuration
+[!NOTE] This system was tested used with dokploy. For now, migrations and configurations will be centered around this tool.
+
+### Migrating Dokploy to a different VPS
+Transfer the entire filesystem using rsync:
+```bash
+rsync -aAXv --delete \ --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found","/swapfile"} \ -e "ssh -i /path/to/private_key" user@source_vps_ip:/ / 
+```
+After the migration, update the server IP in the Dokploy database:
+```sql
+UPDATE admin SET "serverIp" = 'new_server_ip' WHERE "serverIp" = 'old_server_ip'; 
+```
+[!IMPORTANT]
+Environment variables should be saved in advance for each service running inside dokploy. 
+
 # todo
 
 - build categories for the admin panel
